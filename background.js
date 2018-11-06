@@ -38,6 +38,16 @@ function runTimeTasks () {
 
 }
 
+function checkOrInitFirebase() {
+  if (!firebase.apps.length) {
+    console.log('firebase wasn\'t initialized, initializing')
+    firebase.initializeApp(config);
+  } else {
+    console.log('firebase already initialized, continuing')
+  }
+
+}
+
 function callFirebaseInitApp(){
   console.log('initializing firebase from ' + callFirebaseInitApp.caller)
   firebase.initializeApp(config);
@@ -46,6 +56,8 @@ function callFirebaseInitApp(){
 // 2. Right click menu setup
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   // console.log(msg, sender, sendResponse)
+
+  checkOrInitFirebase()
 
   if (msg.from == 'rightclick') {
     //storing position
@@ -368,10 +380,10 @@ function newFocusHandler (url) {
 
 function setFlag (currentUrl) {
   // console.log('setFlag ran with url ', currentUrl)
-  var rawUrl = getRawUrl(currentUrl)
+  var rawUrl = removeWww(getRawUrl(currentUrl))
   var domain = rawUrl.split("/")[0]
   var domain = removeWww(domain);
-  console.log("r", rawUrl, "d", domain)
+  console.log("----------- r", rawUrl, "d", domain)
   var setflag = 0;
 
   getData( function(listings) {
@@ -436,7 +448,7 @@ function setFlag (currentUrl) {
               setflag = 1;
             }
           }
-          console.log ('domain has open flags but this URL didn\'t match a known banned site', listings.verified[i], rawUrl)
+          console.log ('domain has open flags but this URL didn\'t match a known banned site', listings.flagged[i], rawUrl)
           return setIcon('grey')
           setflag = 1;
         }
