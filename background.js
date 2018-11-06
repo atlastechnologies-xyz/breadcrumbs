@@ -41,7 +41,7 @@ function runTimeTasks () {
 function checkOrInitFirebase() {
   if (!firebase.apps.length) {
     console.log('firebase wasn\'t initialized, initializing')
-    firebase.initializeApp(config);
+    callFirebaseInitApp()
   } else {
     console.log('firebase already initialized, continuing')
   }
