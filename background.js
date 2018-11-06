@@ -542,7 +542,8 @@ function setIcon(flag, count){
 
 function getRawUrl (rawUrl) {
   console.log('getting raw url of ', rawUrl)
-  var url =  (rawUrl.split('?')[0]).split('//')[1] // remove get params and remove protocol header
+  // var url =  (rawUrl.split('?')[0]).split('//')[1] // old version removing params as well
+  var url = rawUrl.split('//')[1] // remove protocol header
   return url
 }
 
