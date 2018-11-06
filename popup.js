@@ -251,11 +251,6 @@ function getFlags (cb) {
 
 }
 
-function getRawUrl (rawUrl) {
-  var url =  (rawUrl.split('?')[0]).split('//')[1] // remove get params and remove protocol header
-  return url
-}
-
 function fetchFlagsForUrl (url, cb) {
   console.log(url)
 
@@ -958,6 +953,8 @@ function checkIfHomePage (url) {
   var slicedURL = url.split('/')
   console.log( 'slicedUrl', slicedURL, slicedURL[(slicedURL.length - 1)] )
 
+  return false // override 
+
   if ( slicedURL[(slicedURL.length - 1)] === "" ) {
     if ( slicedURL.length > 2 ) {
       return false
@@ -1029,7 +1026,8 @@ function BC_submitNewStar () {
 
 function getRawUrl (rawUrl) {
   console.log('getting raw url of ', rawUrl)
-  var url =  (rawUrl.split('?')[0]).split('//')[1] // remove get params and remove protocol header
+  // var url =  (rawUrl.split('?')[0]).split('//')[1] // remove get params and remove protocol header -- old version
+  var url = rawUrl.split('//')[1] // remove protocol header
   return url
 }
 
