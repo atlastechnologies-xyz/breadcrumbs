@@ -104,8 +104,8 @@ p.submitFlagInstruction {
     margin-right: 2px;
 }
 .flagElement {
-  width: 92%;
-  margin: auto;
+  width: 98%;
+  margin-left: 5px;
   border-radius: 5px;
   padding: 10px;
   background-color: aliceblue;
@@ -135,6 +135,7 @@ button.flagInfo {
   border-radius: 0.5em;
   max-height: 500px;
   overflow: auto;
+  margin-left: -5px;
 }
 p.flagStatus {
   display: inline-block;
@@ -205,7 +206,7 @@ select.bc_input {
   width: 290px;
 }
 .bc_input.submit {
-  width: 15%;
+  width: 45px;
   background-color: #2196F3;
   padding: 5px;
   border-radius: 5px;
@@ -428,4 +429,30 @@ div#noFlags {
 span.hasChildrenMessage {
     margin-left: 5px;
     vertical-align: middle;
+}
+
+/* cleaning up nested comments */
+.flagFooter {
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+.flagBody {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.flagHeader {
+  padding: 5px;
+}
+.flagElement {
+  padding: 0;
+}
+p.submitFlagMessage.noFlags {
+    padding: 5px;
+}
+p.submitFlagInstruction.noFlags {
+    width: 90%;
+    margin: auto;
+}
+.childDiv {
+    padding-bottom: 0.5px;
 }

@@ -574,7 +574,7 @@ function showChildren (id) {
         zz.textContent = "[-]"
 
     chrome.storage.local.get(["extras"] , function(extras){
-      console.log(extras, id)
+      // console.log(extras, id)
       var flags = extras.extras
       var children = []
 
@@ -585,7 +585,7 @@ function showChildren (id) {
       }
 
       if ( children.length > 0 ) {
-        console.log('found children ', children)
+        // console.log('found children ', children)
         var parentDiv = document.getElementById(id)
 
         var childDiv = document.createElement('div')
@@ -602,7 +602,7 @@ function showChildren (id) {
         }
 
       } else {
-        console.log('no children found')
+        // console.log('no children found')
       }
 
     })  
@@ -612,16 +612,16 @@ function showChildren (id) {
 }
 
 function getChildren ( flags, id ) {
-  console.log('checking for children for ' + id + " with ", flags)
+  // console.log('checking for children for ' + id + " with ", flags)
   var set = []
   for ( var l = 0; l < flags.length; l++ ) {
-    console.log('checking child', flags[l])
+    // console.log('checking child', flags[l])
     if ( flags[l].parent_id === id ) {
-      console.log('found child', flags[l])      
+      // console.log('found child', flags[l])      
       set.push(flags[l])
     }
   }
-  console.log('returning set' + set)
+  // console.log('returning set' + set)
   return set
 }
 
@@ -727,7 +727,7 @@ function addCommentToFlagContainer (flag, flagContainer, children) {
   newFlag.className = "flagElement"
   // var flagContainer = document.getElementById("flagContainer");
 
-  console.log('children is ' + children)
+  // console.log('children is ' + children)
 
   var hasChildren = document.createElement('div')
       hasChildren.id = "hasChildren_" + flag.id
