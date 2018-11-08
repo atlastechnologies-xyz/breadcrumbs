@@ -432,7 +432,6 @@ function showFlags (unsortedFlags) {
 
   // Retrieve Flag Container
   // flagContainer.className = "flagContainer"
-  var noFlags = 0
   var flags = sortCommentsByScore(unsortedFlags)
 
   document.getElementById('loadingMessage').className = document.getElementById('loadingMessage').className.split('hidden').join(' ')
@@ -444,111 +443,186 @@ function showFlags (unsortedFlags) {
 
     var flagContainer = document.getElementById("flagContainer");
 
-    // Inititalize 'extras' array
-    var extras = []
-    var layer3 = []
+    setTopLevelFlags(flags, showPendingFlags, flagContainer)
 
-    var score = 0;
+    // // loop through extras
+      // for ( var y = 0; y < extras.length; y++ ) {
+      //   console.log('searching for parent', extras[y].parent_id)
+      //   var parentCheck = document.getElementById(extras[y].parent_id)
 
-    // Fill Flag Container (top level comments)
-    console.log('flags**'+JSON.stringify(flags), "showPendingFlags is ", showPendingFlags)
-    for ( var x = 0; x < flags.length; x++ ) {
+      //   if ( parentCheck === "undefined" ) {
+      //     console.log('parent not found, proceeding with others')
+      //   } else {
+      //     // first, check if the child node exists
+      //     var children = document.getElementById(extras[y].parent_id + "_children")
 
-      // Check if flag is already present
-      var fCheck = document.getElementById(flags[x].id)
+      //     if ( children === null) {
+      //       console.log('children is undefined, creating children node')
+      //       children = document.createElement('div')
+      //       children.id = extras[y].parent_id + "_children"
+      //       children.className = "childNode"
 
-      if (fCheck != null) {
-        // skip this flag as it's already loaded
-      
-      } else {
+      //       var parent = document.getElementById(extras[y].parent_id)
 
+      //       if ( parent === null ) {
+      //         console.log('layer 3 comment found... adding to array')
+      //         layer3.push(extras[y])
 
+      //       } else {
+      //         console.log('appending', children, "to", parent)
 
-        if ( showPendingFlags === true || (showPendingFlags === false && flags[x].status != 'FLAG PENDING') ) {
-          console.log('parent is', flags[x].parent_id)
-          if (typeof(flags[x].parent_id) === "undefined" || flags[x].parent_id === 0) {
-            if (flags[x].is_flag) {
-              score++
-              // addFlagToFlagContainer(flags[x], flagContainer)  
-            } else {
-              if ( noFlags === 0 ) {
-                noFlags = 1
-                document.getElementById('loadingMessage').className += ' hidden'
-              }    
-              addCommentToFlagContainer(flags[x], flagContainer)
-           
-            }             
+      //         parent.appendChild(children)
+
+      //         children = document.getElementById(extras[y].parent_id + "_children")
+
+      //         addCommentToFlagContainer(extras[y], children)
+
+      //       }
+              
+      //     } else {
+      //       console.log('children node found, appending child')
+      //       children = document.getElementById(extras[y].parent_id + "_children")
+            
+      //       score++
+      //       addCommentToFlagContainer(extras[y], children)
+
+      //     }
+
+      //   }
+
+    // } 
+
+  });  
+}
+
+function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
+  // Inititalize 'extras' array
+  var extras = []
+  var score = 0
+  var noFlags = 0  
+
+  // Fill Flag Container (top level comments)
+  for ( var x = 0; x < flags.length; x++ ) {
+
+    // Check if flag is already present
+    var fCheck = document.getElementById(flags[x].id)
+
+    if (fCheck != null) {
+      // skip this flag as it's already loaded
+    
+    } else {
+
+      if ( showPendingFlags === true || (showPendingFlags === false && flags[x].status != 'FLAG PENDING') ) {
+        console.log('parent is', flags[x].parent_id)
+        if (typeof(flags[x].parent_id) === "undefined" || flags[x].parent_id === 0) {
+
+          var children = getChildren(flags, flags[x].id)
+
+          if (flags[x].is_flag) {
+            score++
+            // addFlagToFlagContainer(flags[x], flagContainer)  
           } else {
-            extras.push(flags[x])
-          }
-
+            if ( noFlags === 0 ) {
+              noFlags = 1
+              document.getElementById('loadingMessage').className += ' hidden'
+            }    
+            addCommentToFlagContainer(flags[x], flagContainer, children)
+         
+          }             
         } else {
-          console.log('skipping flag ', flags[x], 'x is ', x, 'flags.length is', flags.length)
-          if ( x === (flags.length - 1 ) ){
-            navHome ()
-          }
+          extras.push(flags[x])
+        }
+
+      } else {
+        console.log('skipping flag ', flags[x], 'x is ', x, 'flags.length is', flags.length)
+        if ( x === (flags.length - 1 ) ){
+          navHome ()
         }
       }
-
     }
 
-    // loop through extras
-    for ( var y = 0; y < extras.length; y++ ) {
-      console.log('searching for parent', extras[y].parent_id)
-      var parentCheck = document.getElementById(extras[y].parent_id)
-
-      if ( parentCheck === "undefined" ) {
-        console.log('parent not found, proceeding with others')
-      } else {
-        // first, check if the child node exists
-        var children = document.getElementById(extras[y].parent_id + "_children")
-
-        if ( children === null) {
-          console.log('children is undefined, creating children node')
-          children = document.createElement('div')
-          children.id = extras[y].parent_id + "_children"
-          children.className = "childNode"
-
-          var parent = document.getElementById(extras[y].parent_id)
-
-          if ( parent === null ) {
-            console.log('layer 3 comment found... adding to array')
-            layer3.push(extras[y])
-
-          } else {
-            console.log('appending', children, "to", parent)
-
-            parent.appendChild(children)
-
-            children = document.getElementById(extras[y].parent_id + "_children")
-
-            addCommentToFlagContainer(extras[y], children)
-
-          }
-            
-        } else {
-          console.log('children node found, appending child')
-          children = document.getElementById(extras[y].parent_id + "_children")
-          
-          score++
-          addCommentToFlagContainer(extras[y], children)
-
-        }
-
-      }
-
-    } 
-
+  }
+  if ( score > 0 ) {
     console.log('setting flag count to ', score)
     document.getElementById('flagCount').className = document.getElementById('flagCount').className.split('hidden').join(' ')
     document.getElementById('flagCount').textContent = score
+  }
+  
+  // Push extras to the local storage
+  chrome.storage.local.set({ "extras": extras }, function(result){
+      // displaySuccess('Extras stored successfully.')
+  });
 
-    if ( noFlags === 0 ) {
-      document.getElementById('loadingMessage').className += ' hidden'
-      showNoFlagsMessage()
-    } 
+  if ( noFlags === 0 ) {
+    document.getElementById('loadingMessage').className += ' hidden'
+    showNoFlagsMessage()
+  }   
+}
 
-  });  
+
+function showChildren (id) {
+
+  var exists = document.getElementById('children_' + id)
+
+  if ( exists != null ) {
+    var zz = document.getElementById("expandButton_" + id)
+        zz.textContent = "[+]"
+    hideDiv( 'children_' + id )
+
+  } else {
+    var zz = document.getElementById("expandButton_" + id)
+        zz.textContent = "[-]"
+
+    chrome.storage.local.get(["extras"] , function(extras){
+      console.log(extras, id)
+      var flags = extras.extras
+      var children = []
+
+      for ( var l = 0; l < flags.length; l++ ) {
+        if ( flags[l].parent_id === id ) {
+          children.push(flags[l])
+        }
+      }
+
+      if ( children.length > 0 ) {
+        console.log('found children ', children)
+        var parentDiv = document.getElementById(id)
+
+        var childDiv = document.createElement('div')
+            childDiv.id = 'children_' + id
+            childDiv.className = "childDiv"
+
+        parentDiv.appendChild(childDiv)
+
+
+
+        for ( var x = 0; x < children.length; x++ ) {
+          var sChildren = getChildren(flags, children[x].id)
+          addCommentToFlagContainer(children[x], document.getElementById('children_' + id), sChildren)
+        }
+
+      } else {
+        console.log('no children found')
+      }
+
+    })  
+
+  }
+
+}
+
+function getChildren ( flags, id ) {
+  console.log('checking for children for ' + id + " with ", flags)
+  var set = []
+  for ( var l = 0; l < flags.length; l++ ) {
+    console.log('checking child', flags[l])
+    if ( flags[l].parent_id === id ) {
+      console.log('found child', flags[l])      
+      set.push(flags[l])
+    }
+  }
+  console.log('returning set' + set)
+  return set
 }
 
 function addFlagToFlagContainer (flag, flagContainer) {
@@ -646,12 +720,30 @@ function addFlagToFlagContainer (flag, flagContainer) {
 
 }
 
-function addCommentToFlagContainer (flag, flagContainer) {
+function addCommentToFlagContainer (flag, flagContainer, children) {
   // If not, then add it
   var newFlag = document.createElement('div')
   newFlag.id = flag.id
   newFlag.className = "flagElement"
   // var flagContainer = document.getElementById("flagContainer");
+
+  console.log('children is ' + children)
+
+  var hasChildren = document.createElement('div')
+      hasChildren.id = "hasChildren_" + flag.id
+      hasChildren.className = "hasChildren"
+
+  var expandChildrenButton = document.createElement('span')
+      expandChildrenButton.id = "expandButton_" + flag.id
+      expandChildrenButton.textContent = "[+]"
+
+  var hasChildrenMessage = document.createElement('span')
+      hasChildrenMessage.textContent = children.length + " replies"
+      hasChildrenMessage.className = "hasChildrenMessage"
+      
+      hasChildren.onclick = function() { showChildren (flag.id) }
+      hasChildren.appendChild(expandChildrenButton)
+      hasChildren.appendChild(hasChildrenMessage)
 
   var flagHeader = document.createElement('div')
       flagHeader.className = "flagHeader"
@@ -732,6 +824,10 @@ function addCommentToFlagContainer (flag, flagContainer) {
       flagFooter.appendChild(replyButton)
       flagFooter.appendChild(infoButtonContainer)
       flagFooter.appendChild(reportButton)
+
+  if ( children.length > 0 ) {
+    flagFooter.appendChild(hasChildren)
+  }
 
   newFlag.appendChild(flagHeader)
   newFlag.appendChild(flagBody)
