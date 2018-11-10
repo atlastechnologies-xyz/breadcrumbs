@@ -245,7 +245,7 @@ function BC_submitNewStar () {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
     var payload = {
-      "url" : getRawUrl(tabs[0].url),
+      "url" : convertUrl(tabs[0].url),
       "description": ""
     }
     var isHomePage = checkIfHomePage (payload.url) 
@@ -380,7 +380,7 @@ function newFocusHandler (url) {
 
 function setFlag (currentUrl) {
   // console.log('setFlag ran with url ', currentUrl)
-  var rawUrl = removeWww(getRawUrl(currentUrl))
+  var rawUrl = removeWww(convertUrl(currentUrl))
   var domain = rawUrl.split("/")[0]
   var domain = removeWww(domain);
   console.log("----------- r", rawUrl, "d", domain)
@@ -469,7 +469,7 @@ function highlightTextInView () {
       console.log ('autoHighlighting is true, checking flags for url')
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
-        fetchFlagsForUrl(getRawUrl(tabs[0].url), function(flags) {
+        fetchFlagsForUrl(convertUrl(tabs[0].url), function(flags) {
           console.log('flags retrieved, sending highlight calls')
 
           for (var i = 0; i < flags.length; i++ ) {
@@ -674,3 +674,99 @@ function initSettings () {
   });
 
 }
+
+/* Server Side URL Format Matching */
+function convertUrl (url){
+      if (url === ""){
+        return url;
+      }
+      url = stripHttp(url);
+      url = stripWww(url);
+      var jsonObjOfParameters = {};
+      var parameters = url.split("?")
+      if (parameters.length === 1){
+        return url;
+      }
+      var pairs = parameters[1].split('&');
+      for(i in pairs){
+          var split = pairs[i].split('=');
+          jsonObjOfParameters[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
+      }
+      jsonObjOfParameters = removeParametersBasedOnDomain(url, jsonObjOfParameters);
+
+      var ordered = {};
+      Object.keys(jsonObjOfParameters).sort().forEach(function(key) {
+        ordered[key] = jsonObjOfParameters[key];
+      });
+      //Now They Are Ordered
+      var newOrderedParameters ="";
+      Object.keys(ordered).forEach(function(key) {
+        newOrderedParameters = newOrderedParameters + key + "=" + ordered[key] + "&";
+      })
+      newOrderedParameters = newOrderedParameters.slice(0, -1);
+      var newUrl = parameters[0] + '?' + newOrderedParameters
+      return newUrl;
+}
+
+function removeParametersBasedOnDomain(url, jsonObjOfParameters){
+      delete jsonObjOfParameters.t;
+      delete jsonObjOfParameters.ref;
+      delete jsonObjOfParameters.aff;
+      delete jsonObjOfParameters.campaign;
+      delete jsonObjOfParameters.sorce;
+      delete jsonObjOfParameters.ref
+      delete jsonObjOfParameters.source
+      delete jsonObjOfParameters.url_id
+      delete jsonObjOfParameters.aff_id
+      delete jsonObjOfParameters.aff_sub
+      delete jsonObjOfParameters.url
+      delete jsonObjOfParameters.payout
+      delete jsonObjOfParameters.redirect
+      delete jsonObjOfParameters.email
+      delete jsonObjOfParameters.phone
+      delete jsonObjOfParameters.google_aid
+      delete jsonObjOfParameters.google_aid_sha1
+      delete jsonObjOfParameters.ios_ifa
+      delete jsonObjOfParameters.ios_ifv
+      delete jsonObjOfParameters.unid
+      delete jsonObjOfParameters.user_id
+      delete jsonObjOfParameters.windows_aid
+      delete jsonObjOfParameters.windows_aid_sha1
+      delete jsonObjOfParameters.tag
+      delete jsonObjOfParameters.creative
+      delete jsonObjOfParameters.creativeASIN
+      delete jsonObjOfParameters.linkid
+      delete jsonObjOfParameters.utm_source
+      delete jsonObjOfParameters.utm_medium
+      delete jsonObjOfParameters.utm_campaign
+      delete jsonObjOfParameters.utm_content
+      delete jsonObjOfParameters.pf_rd_p
+      delete jsonObjOfParameters.pf_rd_s
+      delete jsonObjOfParameters.pf_rd_t
+      delete jsonObjOfParameters.pf_rd_i
+      delete jsonObjOfParameters.pf_rd_m
+      delete jsonObjOfParameters.pf_rd_r
+      delete jsonObjOfParameters.smid
+      if (url.startsWith('youtube')){
+        delete jsonObjOfParameters.t;
+        delete jsonObjOfParameters.feature;
+      }
+      return jsonObjOfParameters;
+}
+
+function stripWww (url) {
+  if (url.indexOf("www.") === 0){
+      url = url.replace("www.","");
+  }
+  return url;
+}
+
+function stripHttp (url) {
+  if (url.indexOf("https://") === 0){
+    url = url.replace("https://","");
+  }
+  if (url.indexOf("http://") === 0){
+    url = url.replace("http://","");
+  }
+  return url;
+} 

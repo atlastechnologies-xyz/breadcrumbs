@@ -231,7 +231,7 @@ function getFlags (cb) {
 
 
 
-    var url = getRawUrl(tabs[0].url)
+    var url = convertUrl(tabs[0].url)
     console.log('cb', cb)
     console.log(url)
 
@@ -445,53 +445,6 @@ function showFlags (unsortedFlags) {
 
     setTopLevelFlags(flags, showPendingFlags, flagContainer)
 
-    // // loop through extras
-      // for ( var y = 0; y < extras.length; y++ ) {
-      //   console.log('searching for parent', extras[y].parent_id)
-      //   var parentCheck = document.getElementById(extras[y].parent_id)
-
-      //   if ( parentCheck === "undefined" ) {
-      //     console.log('parent not found, proceeding with others')
-      //   } else {
-      //     // first, check if the child node exists
-      //     var children = document.getElementById(extras[y].parent_id + "_children")
-
-      //     if ( children === null) {
-      //       console.log('children is undefined, creating children node')
-      //       children = document.createElement('div')
-      //       children.id = extras[y].parent_id + "_children"
-      //       children.className = "childNode"
-
-      //       var parent = document.getElementById(extras[y].parent_id)
-
-      //       if ( parent === null ) {
-      //         console.log('layer 3 comment found... adding to array')
-      //         layer3.push(extras[y])
-
-      //       } else {
-      //         console.log('appending', children, "to", parent)
-
-      //         parent.appendChild(children)
-
-      //         children = document.getElementById(extras[y].parent_id + "_children")
-
-      //         addCommentToFlagContainer(extras[y], children)
-
-      //       }
-              
-      //     } else {
-      //       console.log('children node found, appending child')
-      //       children = document.getElementById(extras[y].parent_id + "_children")
-            
-      //       score++
-      //       addCommentToFlagContainer(extras[y], children)
-
-      //     }
-
-      //   }
-
-    // } 
-
   });  
 }
 
@@ -520,7 +473,16 @@ function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
 
           if (flags[x].is_flag) {
             score++
-            // addFlagToFlagContainer(flags[x], flagContainer)  
+            if ( (flags[x].description === null ) || (flags[x].description === undefined) || (flags[x].description === "") ) {
+              console.log('found a flag with no description field, id: ', flags[x].id )
+            } else {
+              if ( noFlags === 0 ) {
+                noFlags = 1
+                document.getElementById('loadingMessage').className += ' hidden'
+              } 
+              addFlagToFlagContainer(flags[x], flagContainer, children)    
+            }
+            
           } else {
             if ( noFlags === 0 ) {
               noFlags = 1
@@ -625,12 +587,28 @@ function getChildren ( flags, id ) {
   return set
 }
 
-function addFlagToFlagContainer (flag, flagContainer) {
+function addFlagToFlagContainer (flag, flagContainer, children) {
   // If not, then add it
   var newFlag = document.createElement('div')
   newFlag.id = flag.id
   newFlag.className = "flagElement"
   // var flagContainer = document.getElementById("flagContainer");
+
+  var hasChildren = document.createElement('div')
+      hasChildren.id = "hasChildren_" + flag.id
+      hasChildren.className = "hasChildren"
+
+  var expandChildrenButton = document.createElement('span')
+      expandChildrenButton.id = "expandButton_" + flag.id
+      expandChildrenButton.textContent = "[+]"
+
+  var hasChildrenMessage = document.createElement('span')
+      hasChildrenMessage.textContent = children.length + " replies"
+      hasChildrenMessage.className = "hasChildrenMessage"
+      
+      hasChildren.onclick = function() { showChildren (flag.id) }
+      hasChildren.appendChild(expandChildrenButton)
+      hasChildren.appendChild(hasChildrenMessage)
 
   var flagHeader = document.createElement('div')
       flagHeader.className = "flagHeader"
@@ -715,6 +693,10 @@ function addFlagToFlagContainer (flag, flagContainer) {
   newFlag.appendChild(flagHeader)
   newFlag.appendChild(flagBody)
   newFlag.appendChild(flagFooter)
+
+  if ( children.length > 0 ) {
+    flagFooter.appendChild(hasChildren)
+  }
 
   flagContainer.appendChild(newFlag)      
 
@@ -901,7 +883,7 @@ function submitReply (id) {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
           // temporarily hardcoding subject_id to 1 to avoid bugs
           var payload = {
-            "url" : getRawUrl(tabs[0].url),
+            "url" : convertUrl(tabs[0].url),
             "description": document.getElementById( "replyBody_" + id ).value,
             "is_flag" : false,
             "parent_id" : id
@@ -1024,7 +1006,7 @@ function BC_submitNewFlagForm () {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
     var payload = {
-      "url" : getRawUrl(tabs[0].url),
+      "url" : convertUrl(tabs[0].url),
       "description": document.getElementById("BC_nf_description").value,
       "is_flag" : false
     }
@@ -1073,7 +1055,7 @@ function BC_submitNewFlag () {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
     var payload = {
-      "url" : getRawUrl(tabs[0].url),
+      "url" : convertUrl(tabs[0].url),
       "description": "",
       "is_flag" : true
     }
@@ -1100,7 +1082,7 @@ function BC_submitNewStar () {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
     var payload = {
-      "url" : getRawUrl(tabs[0].url),
+      "url" : convertUrl(tabs[0].url),
       "description": ""
     }
     var isHomePage = checkIfHomePage (payload.url) 
@@ -1219,3 +1201,100 @@ function commentSort(a,b) {
     return 1;
   return 0;
 }  
+
+
+/* Server Side URL Format Matching */
+function convertUrl (url){
+      if (url === ""){
+        return url;
+      }
+      url = stripHttp(url);
+      url = stripWww(url);
+      var jsonObjOfParameters = {};
+      var parameters = url.split("?")
+      if (parameters.length === 1){
+        return url;
+      }
+      var pairs = parameters[1].split('&');
+      for(i in pairs){
+          var split = pairs[i].split('=');
+          jsonObjOfParameters[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
+      }
+      jsonObjOfParameters = removeParametersBasedOnDomain(url, jsonObjOfParameters);
+
+      var ordered = {};
+      Object.keys(jsonObjOfParameters).sort().forEach(function(key) {
+        ordered[key] = jsonObjOfParameters[key];
+      });
+      //Now They Are Ordered
+      var newOrderedParameters ="";
+      Object.keys(ordered).forEach(function(key) {
+        newOrderedParameters = newOrderedParameters + key + "=" + ordered[key] + "&";
+      })
+      newOrderedParameters = newOrderedParameters.slice(0, -1);
+      var newUrl = parameters[0] + '?' + newOrderedParameters
+      return newUrl;
+}
+
+function removeParametersBasedOnDomain(url, jsonObjOfParameters){
+      delete jsonObjOfParameters.t;
+      delete jsonObjOfParameters.ref;
+      delete jsonObjOfParameters.aff;
+      delete jsonObjOfParameters.campaign;
+      delete jsonObjOfParameters.sorce;
+      delete jsonObjOfParameters.ref
+      delete jsonObjOfParameters.source
+      delete jsonObjOfParameters.url_id
+      delete jsonObjOfParameters.aff_id
+      delete jsonObjOfParameters.aff_sub
+      delete jsonObjOfParameters.url
+      delete jsonObjOfParameters.payout
+      delete jsonObjOfParameters.redirect
+      delete jsonObjOfParameters.email
+      delete jsonObjOfParameters.phone
+      delete jsonObjOfParameters.google_aid
+      delete jsonObjOfParameters.google_aid_sha1
+      delete jsonObjOfParameters.ios_ifa
+      delete jsonObjOfParameters.ios_ifv
+      delete jsonObjOfParameters.unid
+      delete jsonObjOfParameters.user_id
+      delete jsonObjOfParameters.windows_aid
+      delete jsonObjOfParameters.windows_aid_sha1
+      delete jsonObjOfParameters.tag
+      delete jsonObjOfParameters.creative
+      delete jsonObjOfParameters.creativeASIN
+      delete jsonObjOfParameters.linkid
+      delete jsonObjOfParameters.utm_source
+      delete jsonObjOfParameters.utm_medium
+      delete jsonObjOfParameters.utm_campaign
+      delete jsonObjOfParameters.utm_content
+      delete jsonObjOfParameters.pf_rd_p
+      delete jsonObjOfParameters.pf_rd_s
+      delete jsonObjOfParameters.pf_rd_t
+      delete jsonObjOfParameters.pf_rd_i
+      delete jsonObjOfParameters.pf_rd_m
+      delete jsonObjOfParameters.pf_rd_r
+      delete jsonObjOfParameters.smid
+      if (url.startsWith('youtube')){
+        delete jsonObjOfParameters.t;
+        delete jsonObjOfParameters.feature;
+      }
+      return jsonObjOfParameters;
+  }
+
+function stripWww (url) {
+  if (url.indexOf("www.") === 0){
+    url = url.replace("www.","");
+  }
+  return url;
+}
+
+function stripHttp (url) {
+  if (url.indexOf("https://") === 0){
+    url = url.replace("https://","");
+  }
+  if (url.indexOf("http://") === 0){
+    url = url.replace("http://","");
+  }
+  return url;
+} 
