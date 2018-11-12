@@ -29,7 +29,7 @@ chrome.runtime.onInstalled.addListener(function onInstalled (details){
 });
 
 function openTutorial () {
-  var newURL = "https://downloadbreadcrumbs.com/pages/tutorial1#/";
+  var newURL = "https://downloadbreadcrumbs.com/pages/tutorial1.html";
   chrome.tabs.create({ url: newURL });
 }
 
@@ -384,12 +384,36 @@ function newFocusHandler (url) {
   var pUrl = setFlag(url)
 }
 
+var knownUrls = [{
+  "url" : "https://downloadbreadcrumbs.com/pages/tutorial1.html",
+  "color" : "red"
+},{
+  "url" : "https://downloadbreadcrumbs.com/pages/tutorial2.html",
+  "color" : "yellow"
+},{
+  "url" : "https://downloadbreadcrumbs.com/pages/tutorial3.html",
+  "color" : "blue"
+},{
+  "url" : "https://downloadbreadcrumbs.com/pages/tutorial4.html",
+  "color" : "grey"
+}]
 
 function setFlag (currentUrl) {
   // console.log('setFlag ran with url ', currentUrl)
   var rawUrl = removeWww(convertUrl(currentUrl))
   var domain = rawUrl.split("/")[0]
   var domain = removeWww(domain);
+
+  // Check known (static) urls
+  for ( var ll = 0; ll < knownUrls.length; ll++ ) {
+    console.log('checking', rawUrl, "against", knownUrls[ll])
+    if ( rawUrl === convertUrl(knownUrls[ll].url) ) {
+      return setIcon(knownUrls[ll].color)
+    }
+  }  
+
+  // Then check all the urls in the set
+
   console.log("----------- r", rawUrl, "d", domain)
   var setflag = 0;
 
@@ -440,27 +464,27 @@ function setFlag (currentUrl) {
 
       for ( var i = 0; i < listings.flagged.length; i ++ ) {
 
-         console.log ('checking domain', listings.flagged[i].domain, domain)
+         // console.log ('checking domain', listings.flagged[i].domain, domain)
         if ( listings.flagged[i].domain === domain ) {
-          console.log("matched domain:",domain)
-          console.log("listings.flagged[i].urls:",listings.flagged[i].urls)
+          // console.log("matched domain:",domain)
+          // console.log("listings.flagged[i].urls:",listings.flagged[i].urls)
           // here we'll need to index through the urls to identify if this url is flagged or banned
           for ( var u = 0; u < listings.flagged[i].urls.length; u ++ ) {
             console.log("checking url:",listings.flagged[i].urls[u].url)
             if ( listings.flagged[i].urls[u].url === rawUrl ) {
               // here we'll need to index through the urls to identify if this url is flagged or banned
-              console.log ('url matches flagged', listings.flagged[i].urls[u], rawUrl)
+              // console.log ('url matches flagged', listings.flagged[i].urls[u], rawUrl)
               return setIcon('yellow', listings.flagged[i].urls[u].flagArray.length)
               // sendSetFlagsToView(listings.flagged[i].urls[u].flags)
               setflag = 1;
             }
           }
-          console.log ('domain has open flags but this URL didn\'t match a known banned site', listings.flagged[i], rawUrl)
+          // console.log ('domain has open flags but this URL didn\'t match a known banned site', listings.flagged[i], rawUrl)
           return setIcon('grey')
           setflag = 1;
         }
       }
-      console.log('no matching records found - setting to grey')
+      // console.log('no matching records found - setting to grey')
       setIcon('grey')
     }
   });
