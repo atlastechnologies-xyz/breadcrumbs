@@ -77,6 +77,7 @@ function getFactoid (cb) {
 }
 
 function displayError (message) {
+  loaderControl()
   console.log('setting error message', message)
   var id = randomString(16);
   var e = document.getElementById('error')
@@ -397,7 +398,7 @@ function navSettings () {
 
 function navNewFlag () {
   console.log('nav to new flag')
-  // document.getElementById('home').className += " hidden"
+  document.getElementById('home').className += " hidden"
   document.getElementById('flagContainer').className += " hidden"
   document.getElementById('settings').className += " hidden"
   document.getElementById('newFlag').className = document.getElementById('newFlag').className.split('hidden').join(' ')       
@@ -934,6 +935,7 @@ function vote (id, action, isFlag) {
 }
 
 function updateUser () {
+  loaderControl()
   var username = document.getElementById('userNameInput').value
   console.log('update user triggered', username)
 
@@ -1000,9 +1002,13 @@ function startAuth(interactive) {
             startAuth(interactive);
           });
         }
+        // loaderControl()
+        // refreshData()
       });
     } else {
       chrome.extension.getBackgroundPage().console.log("The OAuth Token was null");
+      // loaderControl()
+      // refreshData()
     }
   });
 }
@@ -1011,6 +1017,7 @@ function startAuth(interactive) {
 // send flag to background.js
 function BC_submitNewFlagForm () {
   // displaySuccess('Breadcrumb submitted!')
+  loaderControl()
   navHome()
   // console.log('submitted!')
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
@@ -1060,7 +1067,7 @@ function checkIfHomePage (url) {
 
 function BC_submitNewFlag () {
   // displaySuccess('Breadcrumb submitted!')
-
+  loaderControl()
   // console.log('submitted!')
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
@@ -1087,7 +1094,7 @@ function BC_submitNewFlag () {
 }
 function BC_submitNewStar () {
   // displaySuccess('Breadcrumb submitted!')
-
+  loaderControl()
   // console.log('submitted!')
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { 
     // temporarily hardcoding subject_id to 1 to avoid bugs
@@ -1151,14 +1158,17 @@ function searchPageAndNav (text) {
 * Starts the sign-in process.
 */
 function startSignIn() {
+  // loaderControl()
   chrome.extension.getBackgroundPage().console.log("start signIn");
   document.getElementById('quickstart-button').disabled = true;
   if (firebase.auth().currentUser) {
     firebase.auth().signOut();
     unsetUserData();
+    // loaderControl()
   } else {
     startAuth(true);
   }
+
 }
 
 function randomString(n) {
