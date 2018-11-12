@@ -24,8 +24,14 @@ chrome.runtime.onStartup.addListener(function onStartup () {
 });
 
 chrome.runtime.onInstalled.addListener(function onInstalled (details){
+  openTutorial()
   runTimeTasks()
 });
+
+function openTutorial () {
+  var newURL = "https://downloadbreadcrumbs.com/pages/tutorial1#/";
+  chrome.tabs.create({ url: newURL });
+}
 
 function runTimeTasks () {
   // console.log('chrome launched - syncing sample data')
