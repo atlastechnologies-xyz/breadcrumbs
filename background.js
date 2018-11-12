@@ -67,7 +67,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   }
 
   if ( msg.from == 'newFlag' ) {
-
+    
     var payload = msg.payload;
     console.log('new Flag submit received', msg)
 
@@ -77,7 +77,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   }
 
   if ( msg.from == 'newComment' ) {
-
+    
     var payload = msg.payload;
     console.log('new comment submit received', msg)
 
@@ -87,7 +87,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   } 
 
   if ( msg.from == 'newStar' ) {
-
+    
     var payload = msg.payload;
     console.log('new star submit received', msg)
 
@@ -97,6 +97,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   }  
 
   if (msg.from == 'getFlags') {
+    
     //storing position
     console.log('received getflags ', msg)
     sendResponse = sample_flags

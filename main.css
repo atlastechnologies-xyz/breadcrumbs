@@ -456,3 +456,7 @@ p.submitFlagInstruction.noFlags {
 .childDiv {
     padding-bottom: 0.5px;
 }
+img.loader {
+    width: 23px;
+    margin-right: 2px;
+}

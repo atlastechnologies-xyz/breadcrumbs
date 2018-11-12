@@ -50,6 +50,15 @@ function setFactoid () {
   })
 }
 
+function loaderControl () {
+  var l = document.getElementById('loader').className
+  if ( l.split('hidden').length > 1 ) {
+    document.getElementById('loader').className = (l.split('hidden')).join(" ")
+  } else {
+    document.getElementById('loader').className+= " hidden"
+  }
+}
+
 function getFactoid (cb) {
   var factoids = [{
     "text" : "Billionaire Ray Dalio credits his success to an open-minded approach to life.",
@@ -108,6 +117,7 @@ function displayTip (message) {
 }
 
 function displaySuccess (message) {
+  loaderControl()
   console.log('setting success message', message)
   var id = randomString(16);
   var e = document.getElementById('success')
@@ -434,7 +444,7 @@ function showFlags (unsortedFlags) {
   // flagContainer.className = "flagContainer"
   var flags = sortCommentsByScore(unsortedFlags)
 
-  document.getElementById('loadingMessage').className = document.getElementById('loadingMessage').className.split('hidden').join(' ')
+loaderControl()
 
   // check for show pending
   chrome.storage.local.get(["settings"] , function(settings){
@@ -478,7 +488,7 @@ function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
             } else {
               if ( noFlags === 0 ) {
                 noFlags = 1
-                document.getElementById('loadingMessage').className += ' hidden'
+                loaderControl()
               } 
               addFlagToFlagContainer(flags[x], flagContainer, children)    
             }
@@ -486,7 +496,7 @@ function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
           } else {
             if ( noFlags === 0 ) {
               noFlags = 1
-              document.getElementById('loadingMessage').className += ' hidden'
+              loaderControl()
             }    
             addCommentToFlagContainer(flags[x], flagContainer, children)
          
@@ -516,7 +526,7 @@ function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
   });
 
   if ( noFlags === 0 ) {
-    document.getElementById('loadingMessage').className += ' hidden'
+    loaderControl()
     showNoFlagsMessage()
   }   
 }
