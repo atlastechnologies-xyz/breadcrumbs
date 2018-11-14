@@ -16,10 +16,11 @@ firebase.initializeApp(config);
 //}
 
 window.onload = function() {
-  chrome.extension.getBackgroundPage().console.log("onLoad Worked");
-  initApp();
-  loadFlags();
-  setNavListeners();
+  console.log("onLoad Worked");
+  checkUserStatus()
+  initApp()
+  loadFlags()
+  setNavListeners()
   setFactoid()
 };
 
@@ -43,6 +44,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 
 });
 
+function checkUserStatus () {
+  getUserDataQuiet()
+}
+
 function setFactoid () {
   getFactoid (function(result) {
     document.getElementById('footerFactoid').textContent = result.text
@@ -50,9 +55,13 @@ function setFactoid () {
   })
 }
 
-function loaderControl () {
+function loaderControl (set) {
   var l = document.getElementById('loader').className
-  if ( l.split('hidden').length > 1 ) {
+  if ( set === "show" ) {
+    document.getElementById('loader').className = (l.split('hidden')).join(" ")
+  } else if ( set === "hide" ) {
+    document.getElementById('loader').className+= " hidden"
+  } else if ( l.split('hidden').length > 1 ) {
     document.getElementById('loader').className = (l.split('hidden')).join(" ")
   } else {
     document.getElementById('loader').className+= " hidden"
@@ -77,7 +86,7 @@ function getFactoid (cb) {
 }
 
 function displayError (message) {
-  loaderControl()
+  loaderControl('hide')
   console.log('setting error message', message)
   var id = randomString(16);
   var e = document.getElementById('error')
@@ -98,6 +107,7 @@ function displayError (message) {
 }
 
 function displayTip (message) {
+  loaderControl('hide')
   console.log('setting tip message', message)
   var id = randomString(16);
   var e = document.getElementById('error')
@@ -118,7 +128,7 @@ function displayTip (message) {
 }
 
 function displaySuccess (message) {
-  loaderControl()
+  loaderControl('hide')
   console.log('setting success message', message)
   var id = randomString(16);
   var e = document.getElementById('success')
@@ -138,6 +148,159 @@ function displaySuccess (message) {
 
 }
 
+function deleteItem (id, cb) {
+  console.log('delete flag id', id)
+  document.getElementById('flagBody_' + id).className += " hidden"
+  document.getElementById('flagFooter_' + id).className += " hidden"
+  
+  var flagItem = document.getElementById(id)
+
+  var l = document.createElement('div')
+      l.className = "deleteDiv"
+      l.id = "deleteDiv_" + id
+
+  var i = document.createElement('span')
+      i.id = "deleteBody_" + id
+      i.textContent = "Are you sure you want to delete this? This action cannot be undone."
+      i.className = "bc_input bc_description bc_comment"
+
+  var f = document.createElement('div')
+      f.className = "newFlagControls bc_comment"
+
+  var s = document.createElement('button')
+      s.textContent = "Confirm"
+      s.onclick = function () { cb(id) }
+      s.className = "bc_input submit delete"
+
+  var c = document.createElement('a')
+      c.onclick = function() { cancelDelete(id) }
+      c.className = "faqButtons"
+      c.textContent = "Cancel"
+
+  f.appendChild(s)
+  f.appendChild(c)
+  l.appendChild(i)
+  l.appendChild(f)
+
+  flagItem.appendChild(l)
+
+}
+
+function cancelDelete (id) {
+  document.getElementById('flagBody_' + id).className = ((document.getElementById('flagBody_' + id).className).split('hidden')).join(' ')
+  document.getElementById('flagFooter_' + id).className = ((document.getElementById('flagFooter_' + id).className).split('hidden')).join(' ')
+  document.getElementById('deleteDiv_' + id).className += " hidden"
+} 
+
+function cancelEdit (id) {
+  document.getElementById('flagBody_' + id).className = ((document.getElementById('flagBody_' + id).className).split('hidden')).join(' ')
+  document.getElementById('flagFooter_' + id).className = ((document.getElementById('flagFooter_' + id).className).split('hidden')).join(' ')
+  document.getElementById('editDiv_' + id).className += " hidden"
+} 
+
+function editItem (id, cb) {
+  console.log('edit bc id', id)
+  console.log('delete flag id', id)
+  document.getElementById('flagBody_' + id).className += " hidden"
+  document.getElementById('flagFooter_' + id).className += " hidden"
+  
+  var flagItem = document.getElementById(id)
+
+  var l = document.createElement('div')
+      l.className = "editDiv"
+      l.id = "editDiv_" + id
+
+  var i = document.createElement('textarea')
+      i.id = "editBody_" + id
+      i.className = "bc_input bc_description bc_comment"
+      i.value = document.getElementById('flagBodyText_' + id).textContent
+
+  var f = document.createElement('div')
+      f.className = "newFlagControls bc_comment"
+
+  var s = document.createElement('button')
+      s.textContent = "Save"
+      s.onclick = function () { cb(id) }
+      s.className = "bc_input submit"
+
+  var c = document.createElement('a')
+      c.onclick = function() { cancelEdit(id) }
+      c.className = "faqButtons"
+      c.textContent = "Cancel"
+
+  f.appendChild(s)
+  f.appendChild(c)
+  l.appendChild(i)
+  l.appendChild(f)
+
+  flagItem.appendChild(l)
+
+}
+
+function callUpdateBreadcrumbAPI (id) {
+  loaderControl('show')  
+  var description = document.getElementById('editBody_' + id).value
+
+  firebase.functions().httpsCallable('updateBreadcrumb')({'breadcrumb_id' : id, 'description' : description})
+    .then( function(result) {
+      console.log('Returned data for updateBreadcrumb: ', result);
+      if (result.data.success === true ) {
+        displaySuccess('Updated successfully.')
+        refreshData()
+      } else {
+        displayError('There was an error, please try again later.')
+      }
+      //chrome.storage.sync.set({data: result}, function() {
+    });
+}
+
+function callUpdateFlagAPI (id) {
+  loaderControl('show')
+  var description = document.getElementById('editBody_' + id).value
+  
+  firebase.functions().httpsCallable('updateFlag')({'flag_id' : id, 'description' : description})
+    .then( function(result) {
+      console.log('Returned data for updateFlag: ', result);
+      if (result.data.success === true ) {
+        displaySuccess('Updated successfully.')
+        refreshData()
+      } else {
+        displayError('There was an error, please try again later.')
+      }
+      //chrome.storage.sync.set({data: result}, function() {
+    });
+}
+
+function callDeleteBreadcrumbAPI (id) {
+  loaderControl('show')  
+  firebase.functions().httpsCallable('deleteBreadcrumb')({'breadcrumb_id' : id})
+    .then( function(result) {
+      console.log('Returned data for deleteBreadcrumb: ', result);
+      if (result.data.success === true ) {
+        displaySuccess('Deleted successfully.')
+        refreshData()
+      } else {
+        displayError('There was an error, please try again later.')
+      }
+      //chrome.storage.sync.set({data: result}, function() {
+    });
+}
+
+function callDeleteFlagAPI (id) {
+  loaderControl('show')
+  firebase.functions().httpsCallable('deleteFlag')({'flag_id' : id})
+    .then( function(result) {
+      console.log('Returned data for deleteFlag: ', result);
+      if (result.data.success === true ) {
+        displaySuccess('Deleted successfully.')
+        refreshData()
+      } else {
+        displayError('There was an error, please try again later.')
+      }      
+      //chrome.storage.sync.set({data: result}, function() {
+    });
+}
+
 function hideDiv (id) {
   var element = document.getElementById(id)
       element.style.display = "none";
@@ -149,7 +312,7 @@ function initApp() {
   // Listen for auth state changes.
   // [START authstatelistener]
   firebase.auth().onAuthStateChanged(function(user) {
-    getUserData(user)
+    getUserDataQuiet()
 
     if (user) {
       chrome.extension.getBackgroundPage().console.log("Got User");
@@ -240,8 +403,6 @@ function getFlags (cb) {
   console.log('get flags ran')
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
-
-
     var url = convertUrl(tabs[0].url)
     console.log('cb', cb)
     console.log(url)
@@ -255,8 +416,6 @@ function getFlags (cb) {
         cb(arr)
       }
     })
-
-
 
   });
 
@@ -312,28 +471,70 @@ function loadFlags () {
 
 }
 
-function getUserData (  ) {
+function getUserDataQuiet () {
+  // calls from navSettings to load the user data 
+  console.log('get user quiet called')
+  firebase.functions().httpsCallable('getUser')()
+    .then( function(result) {
+      console.log('got user', result)
+      storeLocalUser(result.data.name)
+
+    }).catch( function (err) {
+      console.log('err', err)
+      
+    })
+}
+
+function getUserData (user, cb) {
   // calls from navSettings to load the user data 
   console.log('get user called')
   firebase.functions().httpsCallable('getUser')()
     .then( function(result) {
       console.log('got user', result)
       setUserData(result)
+      loaderControl('hide')
+      if ( ( typeof(cb) === "undefined" ) || ( typeof(cb) === null ) ) {
+        console.log('user retrieved successfully', result)
+      } else {
+        console.log("username is", result.data.name, result.name)
+        if  ( ( result.data.name === "" ) || ( typeof(result.data.name) === "undefined" ) ) {
+          
+          // displayTip ( "You'll need to set a username before you can leave breadcrumbs. Click the gear icon in the bottom left corner to set one now." )
+        }
+        cb(true)
+      }
+
       //chrome.storage.sync.set({data: result}, function() {
-    });
+    }).catch( function (err) {
+      console.log('err', err)
+      displayTip("It looks like you're not logged in - click the gear icon in the bottom left corner to log in!")
+    })
 }
 
 function setUserData (user) {
   console.log('setting user info ', user)
   if (user.data.name !== "undefined") {
     var username = user.data.name
+    storeLocalUser(username)
+    displayError('Successfully set username.')    
+
   } else {
     var username = "No username set."    
+    storeLocalUser("")
     displayError('No username set. You will need to choose a username before you can submit breadcrumbs.')    
   }
 
   document.getElementById('userName').innerHTML = username
   document.getElementById('userScore').innerHTML = "(" + user.data.score + ")"
+  
+
+}
+
+function storeLocalUser (username) {
+  console.log('set local storage username to ', username)
+  chrome.storage.local.set({ "username": username }, function(username){
+    console.log('set local')
+  });
 }
 
 function unsetUserData () {
@@ -428,7 +629,7 @@ function navHome () {
 }
 
 function showNoFlagsMessage () {
-  document.getElementById('home').className = document.getElementById('home').className.split('hidden').join(' ') 
+    document.getElementById('home').className = document.getElementById('home').className.split('hidden').join(' ') 
 }
 
 function returnRandomQuote () {
@@ -445,7 +646,7 @@ function showFlags (unsortedFlags) {
   // flagContainer.className = "flagContainer"
   var flags = sortCommentsByScore(unsortedFlags)
 
-loaderControl()
+  loaderControl()
 
   // check for show pending
   chrome.storage.local.get(["settings"] , function(settings){
@@ -460,76 +661,92 @@ loaderControl()
 }
 
 function setTopLevelFlags ( flags, showPendingFlags, flagContainer ) {
-  // Inititalize 'extras' array
-  var extras = []
-  var score = 0
-  var noFlags = 0  
 
-  // Fill Flag Container (top level comments)
-  for ( var x = 0; x < flags.length; x++ ) {
+  chrome.storage.local.get([ "username" ], function(rr){
+    // Inititalize 'extras' array
+    var extras = []
+    var score = 0
+    var noFlags = 0  
 
-    // Check if flag is already present
-    var fCheck = document.getElementById(flags[x].id)
-
-    if (fCheck != null) {
-      // skip this flag as it's already loaded
-    
+    console.log('get username returned ', rr)
+    if ( typeof(rr.username) === "undefined" ) {
+      var usrname = ""
     } else {
+      var usrname = rr.username
+    }
 
-      if ( showPendingFlags === true || (showPendingFlags === false && flags[x].status != 'FLAG PENDING') ) {
-        console.log('parent is', flags[x].parent_id)
-        if (typeof(flags[x].parent_id) === "undefined" || flags[x].parent_id === 0) {
+    // Fill Flag Container (top level comments)
+    for ( var x = 0; x < flags.length; x++ ) {
 
-          var children = getChildren(flags, flags[x].id)
+      // Check if flag is already present
+      var fCheck = document.getElementById(flags[x].id)
 
-          if (flags[x].is_flag) {
-            score++
-            if ( (flags[x].description === null ) || (flags[x].description === undefined) || (flags[x].description === "") ) {
-              console.log('found a flag with no description field, id: ', flags[x].id )
+      if (fCheck != null) {
+        // skip this flag as it's already loaded
+      
+      } else {
+
+        if ( showPendingFlags === true || (showPendingFlags === false && flags[x].status != 'FLAG PENDING') ) {
+          console.log('parent is', flags[x].parent_id)
+          if (typeof(flags[x].parent_id) === "undefined" || flags[x].parent_id === 0) {
+
+            var children = getChildren(flags, flags[x].id)
+
+            if (flags[x].is_flag) {
+              score++
+              if ( (flags[x].description === null ) || (flags[x].description === undefined) || (flags[x].description === "") ) {
+                console.log('found a flag with no description field, id: ', flags[x].id )
+              } else {
+                if ( noFlags === 0 ) {
+                  noFlags = 1
+                  loaderControl()
+                } 
+                addFlagToFlagContainer(flags[x], flagContainer, children, usrname)    
+              }
+              
             } else {
               if ( noFlags === 0 ) {
                 noFlags = 1
                 loaderControl()
-              } 
-              addFlagToFlagContainer(flags[x], flagContainer, children)    
-            }
-            
+              }    
+              addCommentToFlagContainer(flags[x], flagContainer, children, usrname)
+           
+            }             
           } else {
-            if ( noFlags === 0 ) {
-              noFlags = 1
-              loaderControl()
-            }    
-            addCommentToFlagContainer(flags[x], flagContainer, children)
-         
-          }             
-        } else {
-          extras.push(flags[x])
-        }
+            extras.push(flags[x])
+          }
 
-      } else {
-        console.log('skipping flag ', flags[x], 'x is ', x, 'flags.length is', flags.length)
-        if ( x === (flags.length - 1 ) ){
-          navHome ()
+        } else {
+          console.log('skipping flag ', flags[x], 'x is ', x, 'flags.length is', flags.length)
+          if ( x === (flags.length - 1 ) ){
+            navHome ()
+          }
         }
       }
-    }
 
-  }
-  if ( score > 0 ) {
-    console.log('setting flag count to ', score)
-    document.getElementById('flagCount').className = document.getElementById('flagCount').className.split('hidden').join(' ')
-    document.getElementById('flagCount').textContent = score
-  }
-  
-  // Push extras to the local storage
-  chrome.storage.local.set({ "extras": extras }, function(result){
-      // displaySuccess('Extras stored successfully.')
+    }
+    console.log('score is', score)
+    if ( score > 0 ) {
+      console.log('setting flag count to ', score)
+      document.getElementById('flagCount').className = document.getElementById('flagCount').className.split('hidden').join(' ')
+      document.getElementById('flagCount').textContent = score
+    }
+    
+    console.log('extras is', extras)
+    // Push extras to the local storage
+    chrome.storage.local.set({ "extras": extras }, function(result){
+       console.log('set extras returned', result)
+        // displaySuccess('Extras stored successfully.')
+    });
+    
+    console.log('noFlags ', noFlags)
+    if ( noFlags === 0 ) {
+      loaderControl()
+      showNoFlagsMessage()
+    }  
   });
 
-  if ( noFlags === 0 ) {
-    loaderControl()
-    showNoFlagsMessage()
-  }   
+
 }
 
 
@@ -571,7 +788,7 @@ function showChildren (id) {
 
         for ( var x = 0; x < children.length; x++ ) {
           var sChildren = getChildren(flags, children[x].id)
-          addCommentToFlagContainer(children[x], document.getElementById('children_' + id), sChildren)
+          addCommentToFlagContainer(children[x], document.getElementById('children_' + id), sChildren, children[x].user_name)
         }
 
       } else {
@@ -598,7 +815,7 @@ function getChildren ( flags, id ) {
   return set
 }
 
-function addFlagToFlagContainer (flag, flagContainer, children) {
+function addFlagToFlagContainer (flag, flagContainer, children, username) {
   // If not, then add it
   var newFlag = document.createElement('div')
   newFlag.id = flag.id
@@ -644,6 +861,7 @@ function addFlagToFlagContainer (flag, flagContainer, children) {
       flagHeader.appendChild(flagType)    
 
   var flagBody = document.createElement('div')
+      flagBody.id = "flagBody_" + flag.id
       flagBody.className = "flagBody"
 
   var flagVoting = document.createElement('div')
@@ -669,6 +887,7 @@ function addFlagToFlagContainer (flag, flagContainer, children) {
       flagVoting.appendChild(flagDownvote)
 
   var flagText = document.createElement('span')
+      flagText.id = "flagBodyText_" + flag.id
       flagText.className = "flagBodyText"
       flagText.textContent = flag.description
 
@@ -676,6 +895,7 @@ function addFlagToFlagContainer (flag, flagContainer, children) {
       flagBody.appendChild(flagText)
 
   var flagFooter = document.createElement('div')
+      flagFooter.id = "flagFooter_" + flag.id
       flagFooter.className = "flagFooter"
 
   var replyButton = document.createElement('span')
@@ -701,6 +921,23 @@ function addFlagToFlagContainer (flag, flagContainer, children) {
       flagFooter.appendChild(infoButtonContainer)
       flagFooter.appendChild(reportButton)
 
+  if ( flag.user_name === username ) {
+    // add edit and delete buttons
+    var editButton = document.createElement('span')
+        editButton.className = "flagActionButton"
+        editButton.textContent = "edit"
+        editButton.onclick = function() { editItem (flag.id, callUpdateFlagAPI) }            
+  
+    var deleteButton = document.createElement('span')
+        deleteButton.className = "flagActionButton"
+        deleteButton.textContent = "delete"
+        deleteButton.onclick = function() { deleteItem (flag.id, callDeleteFlagAPI) }            
+  
+    flagFooter.appendChild(editButton)
+    flagFooter.appendChild(deleteButton)
+  }
+
+
   newFlag.appendChild(flagHeader)
   newFlag.appendChild(flagBody)
   newFlag.appendChild(flagFooter)
@@ -713,7 +950,7 @@ function addFlagToFlagContainer (flag, flagContainer, children) {
 
 }
 
-function addCommentToFlagContainer (flag, flagContainer, children) {
+function addCommentToFlagContainer (flag, flagContainer, children, username) {
   // If not, then add it
   var newFlag = document.createElement('div')
   newFlag.id = flag.id
@@ -761,6 +998,7 @@ function addCommentToFlagContainer (flag, flagContainer, children) {
       flagHeader.appendChild(flagType)    
 
   var flagBody = document.createElement('div')
+      flagBody.id = "flagBody_" + flag.id
       flagBody.className = "flagBody"
 
   var flagVoting = document.createElement('div')
@@ -786,6 +1024,7 @@ function addCommentToFlagContainer (flag, flagContainer, children) {
       flagVoting.appendChild(flagDownvote)
 
   var flagText = document.createElement('span')
+      flagText.id = "flagBodyText_" + flag.id
       flagText.className = "flagBodyText"
       flagText.textContent = flag.description
 
@@ -793,6 +1032,7 @@ function addCommentToFlagContainer (flag, flagContainer, children) {
       flagBody.appendChild(flagText)
 
   var flagFooter = document.createElement('div')
+      flagFooter.id = "flagFooter_" + flag.id
       flagFooter.className = "flagFooter"
 
   var replyButton = document.createElement('span')
@@ -813,6 +1053,22 @@ function addCommentToFlagContainer (flag, flagContainer, children) {
       reportButton.className = "flagActionButton"
       reportButton.textContent = "report"
       reportButton.onclick = function() { report (flag.id) }            
+
+  if ( flag.user_name === username ) {
+    // add edit and delete buttons
+    var editButton = document.createElement('span')
+        editButton.className = "flagActionButton"
+        editButton.textContent = "edit"
+        editButton.onclick = function() { editItem (flag.id, callUpdateBreadcrumbAPI) }            
+  
+    var deleteButton = document.createElement('span')
+        deleteButton.className = "flagActionButton"
+        deleteButton.textContent = "delete"
+        deleteButton.onclick = function() { deleteItem (flag.id, callDeleteBreadcrumbAPI) }            
+  
+    flagFooter.appendChild(editButton)
+    flagFooter.appendChild(deleteButton)
+  }
 
       flagFooter.appendChild(replyButton)
       flagFooter.appendChild(infoButtonContainer)
@@ -884,6 +1140,7 @@ function reply (id) {
 
 // send flag to background.js
 function submitReply (id) {
+  loaderControl()
   chrome.storage.local.get(["username"] , function(username){
       console.log('loaded username', username)
       if (username === "undefined") {
@@ -919,12 +1176,14 @@ function submitReply (id) {
 }
 
 function vote (id, action, isFlag) {
+  loaderControl()
   console.log('vote action triggered: ', action, id, isFlag)
   firebase.functions().httpsCallable('vote')({'id' : id, 'vote_type' : action, 'is_flag' : isFlag})
   .then( function(result) {
     console.log('flag submission returned', result)
     if (result.data.success) {
       updateScore(id, action, result, isFlag)
+      loaderControl()
     } else {
       displayError('It seems you\'ve already voted on that one. You can still reverse your vote if you want though!')
     }
@@ -981,7 +1240,7 @@ function setupFlags () {
 */
 function startAuth(interactive) {
   chrome.extension.getBackgroundPage().console.log("Starting Auth");
-
+  getUserDataQuiet()
   // Request an OAuth token from the Chrome Identity API.
   chrome.identity.getAuthToken({interactive: !!interactive}, function(token) {
     if (chrome.runtime.lastError && !interactive) {
@@ -1159,6 +1418,7 @@ function searchPageAndNav (text) {
 */
 function startSignIn() {
   // loaderControl()
+  // updateUser()
   chrome.extension.getBackgroundPage().console.log("start signIn");
   document.getElementById('quickstart-button').disabled = true;
   if (firebase.auth().currentUser) {
@@ -1167,6 +1427,7 @@ function startSignIn() {
     // loaderControl()
   } else {
     startAuth(true);
+
   }
 
 }

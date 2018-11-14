@@ -268,8 +268,8 @@ td.userData {
 .errorMessage {
     background-color: #e79595;
     padding: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
     margin-top: 5px;
     border-radius: 5px;
 }
@@ -293,13 +293,13 @@ td.userData {
 .tipMessage {
     background-color: lightgrey;
     padding: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
     margin-top: 5px;
     border-radius: 5px;
 }
 .tipMessage span {
-    color: darkgrey;
+    color: #353535;
     width: 85%;
     font-size: 10pt;
 }
@@ -318,8 +318,8 @@ td.userData {
 .successMessage {
     background-color: #ace26dcf;
     padding: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
     margin-top: 5px;
     border-radius: 5px;
 }
@@ -459,4 +459,10 @@ p.submitFlagInstruction.noFlags {
 img.loader {
     width: 23px;
     margin-right: 2px;
+}
+button.bc_input.submit.delete {
+    width: 85px;
+}
+.deleteDiv, .editDiv {
+    padding: 5px;
 }
