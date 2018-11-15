@@ -239,6 +239,20 @@ function editItem (id, cb) {
 
 }
 
+function callReportAPI (id, isBreadcrumb) {
+  loaderControl('show')  
+  firebase.functions().httpsCallable('report')({'id' : id, 'is_breadcrumb' : isBreadcrumb})
+    .then( function(result) {
+      console.log('Returned data for report: ', result);
+      if (result.data.success === true ) {
+        displaySuccess('Report submitted successfully. We\'ll review this thoroughly and get back to you soon.')
+        refreshData()
+      } else {
+        displayError('There was an error, please try again later.')
+      }
+    });
+}
+
 function callUpdateBreadcrumbAPI (id) {
   loaderControl('show')  
   var description = document.getElementById('editBody_' + id).value
@@ -939,7 +953,7 @@ function addFlagToFlagContainer (flag, flagContainer, children, username) {
   var reportButton = document.createElement('span')
       reportButton.className = "flagActionButton"
       reportButton.textContent = "report"
-      reportButton.onclick = function() { report (flag.id) }            
+      reportButton.onclick = function() { report (flag.id, false) }            
 
       flagFooter.appendChild(replyButton)
       flagFooter.appendChild(infoButtonContainer)
@@ -1086,7 +1100,7 @@ function addCommentToFlagContainer (flag, flagContainer, children, username) {
   var reportButton = document.createElement('span')
       reportButton.className = "flagActionButton"
       reportButton.textContent = "report"
-      reportButton.onclick = function() { report (flag.id) }            
+      reportButton.onclick = function() { report (flag.id, true) }            
 
   if ( flag.user_name === username ) {
     // add edit and delete buttons
@@ -1120,8 +1134,9 @@ function addCommentToFlagContainer (flag, flagContainer, children, username) {
 
 }
 
-function report (id) {
+function report ( id, isBreadcrumb ) {
   console.log('reported:', id)
+  callReportAPI( id, isBreadcrumb )
 }
 
 function reply (id) {
