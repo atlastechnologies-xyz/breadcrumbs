@@ -822,12 +822,22 @@ function getChildren ( flags, id ) {
   return set
 }
 
+function showVotingDisabled () {
+  displayError('Voting is disabled for deleted comments.')
+}
+
 function addFlagToFlagContainer (flag, flagContainer, children, username) {
   // If not, then add it
   var newFlag = document.createElement('div')
   newFlag.id = flag.id
   newFlag.className = "flagElement"
   // var flagContainer = document.getElementById("flagContainer");
+
+  if ( flag.status === 'FLAG DELETED' ) {
+    flag.description = "[deleted]"
+    flag.score = 0
+    flag.username = "deleted"
+  }
 
   var hasChildren = document.createElement('div')
       hasChildren.id = "hasChildren_" + flag.id
@@ -877,12 +887,19 @@ function addFlagToFlagContainer (flag, flagContainer, children, username) {
   var flagUpvote = document.createElement('i')
       flagUpvote.className = "fas fa-sort-up upvote"    
       flagUpvote.id = "upvote_" + flag.id
-      flagUpvote.onclick = function() { vote (flag.id, "UP_VOTE", true) }
+     
 
   var flagDownvote = document.createElement('i')
       flagDownvote.className = "fas fa-sort-down downvote"    
       flagDownvote.id = "downvote_" + flag.id
-      flagDownvote.onclick = function() { vote (flag.id, "DOWN_VOTE", true) }
+
+  if ( flag.status === 'FLAG DELETED' ) {
+      flagUpvote.onclick = function() { showVotingDisabled () }
+      flagDownvote.onclick = function() { showVotingDisabled () }
+  } else {
+      flagUpvote.onclick = function() { vote (flag.id, "UP_VOTE", true) }
+      flagDownvote.onclick = function() { vote (flag.id, "DOWN_VOTE", true) }   
+  }
 
   var flagScore = document.createElement('span')
       flagScore.className = "flagScore"
@@ -964,7 +981,11 @@ function addCommentToFlagContainer (flag, flagContainer, children, username) {
   newFlag.className = "flagElement"
   // var flagContainer = document.getElementById("flagContainer");
 
-  // console.log('children is ' + children)
+  if ( flag.status === 'BREADCRUMB DELETED' ) {
+    flag.description = "[deleted]"
+    flag.vote_count = 0
+    flag.user_name = "deleted"
+  }
 
   var hasChildren = document.createElement('div')
       hasChildren.id = "hasChildren_" + flag.id
@@ -1014,12 +1035,18 @@ function addCommentToFlagContainer (flag, flagContainer, children, username) {
   var flagUpvote = document.createElement('i')
       flagUpvote.className = "fas fa-sort-up upvote"    
       flagUpvote.id = "upvote_" + flag.id
-      flagUpvote.onclick = function() { vote (flag.id, "UP_VOTE", false) }
 
   var flagDownvote = document.createElement('i')
       flagDownvote.className = "fas fa-sort-down downvote"    
       flagDownvote.id = "downvote_" + flag.id
-      flagDownvote.onclick = function() { vote (flag.id, "DOWN_VOTE", false) }
+      
+  if ( flag.status === 'BREADCRUMB DELETED' ) {
+      flagUpvote.onclick = function() { showVotingDisabled () }
+      flagDownvote.onclick = function() { showVotingDisabled () }
+  } else {
+      flagUpvote.onclick = function() { vote (flag.id, "UP_VOTE", true) }
+      flagDownvote.onclick = function() { vote (flag.id, "DOWN_VOTE", true) }   
+  }
 
   var flagScore = document.createElement('span')
       flagScore.className = "flagScore"
