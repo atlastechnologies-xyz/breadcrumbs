@@ -22,6 +22,7 @@ window.onload = function() {
   loadFlags()
   setNavListeners()
   setFactoid()
+
 };
 
 // Handlers for return messages from background.js
@@ -46,6 +47,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 
 function checkUserStatus () {
   getUserDataQuiet()
+
 }
 
 function setFactoid () {
@@ -478,7 +480,8 @@ function getUserDataQuiet () {
     .then( function(result) {
       console.log('got user', result)
       storeLocalUser(result.data.name)
-
+      document.getElementById('userNameInput').value = result.data.name
+      setUserData(result, true)
     }).catch( function (err) {
       console.log('err', err)
       
@@ -511,17 +514,21 @@ function getUserData (user, cb) {
     })
 }
 
-function setUserData (user) {
+function setUserData (user, quiet) {
   console.log('setting user info ', user)
   if (user.data.name !== "undefined") {
     var username = user.data.name
     storeLocalUser(username)
-    displayError('Successfully set username.')    
+    if ( quiet  != true ) {
+      displayError('Successfully set username.')    
+    }
 
   } else {
     var username = "No username set."    
     storeLocalUser("")
-    displayError('No username set. You will need to choose a username before you can submit breadcrumbs.')    
+    if ( quiet != true ) {
+      displayError('No username set. You will need to choose a username before you can submit breadcrumbs.')    
+    }
   }
 
   document.getElementById('userName').innerHTML = username
@@ -1269,6 +1276,7 @@ function startAuth(interactive) {
       // loaderControl()
       // refreshData()
     }
+    loaderControl('hide')
   });
 }
 
@@ -1301,6 +1309,29 @@ function BC_submitNewFlagForm () {
 
   
   })
+}
+
+/**
+* Starts the sign-in process.
+*/
+function startSignIn() {
+  // loaderControl()
+  // updateUser()
+  chrome.extension.getBackgroundPage().console.log("start signIn");
+  document.getElementById('quickstart-button').disabled = true;
+  if (firebase.auth().currentUser) {
+    loaderControl('show')
+    firebase.auth().signOut();
+    unsetUserData();
+    storeLocalUser("")
+    refreshData()
+    // loaderControl()
+  } else {
+    loaderControl('show')
+    startAuth(true);
+
+  }
+
 }
 
 function checkIfHomePage (url) {
@@ -1413,24 +1444,7 @@ function searchPageAndNav (text) {
 
 }
 
-/**
-* Starts the sign-in process.
-*/
-function startSignIn() {
-  // loaderControl()
-  // updateUser()
-  chrome.extension.getBackgroundPage().console.log("start signIn");
-  document.getElementById('quickstart-button').disabled = true;
-  if (firebase.auth().currentUser) {
-    firebase.auth().signOut();
-    unsetUserData();
-    // loaderControl()
-  } else {
-    startAuth(true);
 
-  }
-
-}
 
 function randomString(n) {
   var text = "";
