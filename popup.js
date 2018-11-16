@@ -89,6 +89,12 @@ function getFactoid (cb) {
 
 function displayError (message) {
   loaderControl('hide')
+  console.log('display error')
+  console.log(message)
+  if ( message === "Error: You have to be signed in to do this." ) {
+    navSettings()
+  }
+
   console.log('setting error message', message)
   var id = randomString(16);
   var e = document.getElementById('error')
@@ -246,7 +252,7 @@ function callReportAPI (id, isBreadcrumb) {
       console.log('Returned data for report: ', result);
       if (result.data.success === true ) {
         displaySuccess('Report submitted successfully. We\'ll review this thoroughly and get back to you soon.')
-        refreshData()
+        setTimeout(refreshData, 3000)
       } else {
         displayError('There was an error, please try again later.')
       }
@@ -324,14 +330,14 @@ function hideDiv (id) {
 }
 
 function initApp() {
-  chrome.extension.getBackgroundPage().console.log("initApp Called");
+  console.log("initApp Called");
   // Listen for auth state changes.
   // [START authstatelistener]
   firebase.auth().onAuthStateChanged(function(user) {
     getUserDataQuiet()
 
     if (user) {
-      chrome.extension.getBackgroundPage().console.log("Got User");
+      console.log("Got User");
 
       // User is signed in.
       var displayName = user.displayName;
@@ -349,7 +355,7 @@ function initApp() {
     } else {
       // Let's try to get a Google auth token programmatically.
       // [START_EXCLUDE]
-      chrome.extension.getBackgroundPage().console.log("Could not get user");
+      console.log("Could not get user");
 
       document.getElementById('quickstart-button').textContent = 'Google Login';
       // document.getElementById('quickstart-sign-in-status').textContent = 'Signed out';
@@ -361,7 +367,7 @@ function initApp() {
   // [END authstatelistener]
 
   addButtonListeners()
-  addSettingsListeners()
+  // addSettingsListeners()
 
 }
 
@@ -372,7 +378,7 @@ function addButtonListeners() {
   document.getElementById('newStar-button').addEventListener('click', BC_submitNewStar);
   document.getElementById('showRulesButton').addEventListener('click', showRules)
   // document.getElementById('showFAQButton').addEventListener('click', showFAQ)
-  // document.getElementById('breadcrumbIsFlag').addEventListener('click', showFlagRules)
+  document.getElementById('breadcrumbIsFlag').addEventListener('click', showFlagRules)
   document.getElementById('saveUserNameButton').addEventListener('click', updateUser)
 }
 function showFlagRules () {
@@ -1288,15 +1294,15 @@ function setupFlags () {
 * @param{boolean} interactive True if the OAuth flow should request with an interactive mode.
 */
 function startAuth(interactive) {
-  chrome.extension.getBackgroundPage().console.log("Starting Auth");
+  console.log("Starting Auth");
   getUserDataQuiet()
   // Request an OAuth token from the Chrome Identity API.
   chrome.identity.getAuthToken({interactive: !!interactive}, function(token) {
     if (chrome.runtime.lastError && !interactive) {
 
-      chrome.extension.getBackgroundPage().console.log('It was not possible to get a token programmatically.');
+      console.log('It was not possible to get a token programmatically.');
     } else if(chrome.runtime.lastError) {
-      chrome.extension.getBackgroundPage().console.log('error:'+JSON.stringify(chrome.runtime.lastError));
+      console.log('error:'+JSON.stringify(chrome.runtime.lastError));
     } else if (token) {
       // Authorize Firebase with the OAuth Access Token.
       var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
@@ -1304,7 +1310,7 @@ function startAuth(interactive) {
       firebase.auth().signInAndRetrieveDataWithCredential(credential).catch(function(error) {
         // The OAuth token might have been invalidated. Lets' remove it from cache.
         if (error.code === 'auth/invalid-credential') {
-          chrome.extension.getBackgroundPage().console.log('invalid credentials.');
+          console.log('invalid credentials.');
 
           chrome.identity.removeCachedAuthToken({token: token}, function() {
             startAuth(interactive);
@@ -1314,7 +1320,7 @@ function startAuth(interactive) {
         // refreshData()
       });
     } else {
-      chrome.extension.getBackgroundPage().console.log("The OAuth Token was null");
+      console.log("The OAuth Token was null");
       // loaderControl()
       // refreshData()
     }
@@ -1334,11 +1340,11 @@ function BC_submitNewFlagForm () {
     var payload = {
       "url" : convertUrl(tabs[0].url),
       "description": document.getElementById("BC_nf_description").value,
-      "is_flag" : false
+      "is_flag" : document.getElementById("breadcrumbIsFlag").checked
     }
 
     var isHomePage = checkIfHomePage (payload.url) 
-    console.log('homepage: ', isHomePage)
+    console.log('homepage: ', isHomePage, "submitting", payload)
     if ( isHomePage === false ) {
       var msg = {payload: payload, from: 'newComment'};
 
@@ -1359,7 +1365,7 @@ function BC_submitNewFlagForm () {
 function startSignIn() {
   // loaderControl()
   // updateUser()
-  chrome.extension.getBackgroundPage().console.log("start signIn");
+  console.log("start signIn");
   document.getElementById('quickstart-button').disabled = true;
   if (firebase.auth().currentUser) {
     loaderControl('show')
