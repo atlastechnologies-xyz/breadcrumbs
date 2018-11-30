@@ -16,7 +16,7 @@ firebase.initializeApp(config);
 //}
 
 window.onload = function() {
-  console.log("onLoad Worked");
+  console.log("onLoad iframeView Worked");
   checkUserStatus()
   initApp()
   loadFlags()

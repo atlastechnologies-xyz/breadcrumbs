@@ -1,0 +1,478 @@
+/*iframe.css*/
+.breadcrumbsOverlay {
+    position: fixed;
+    left: calc( 100vw - 30em );
+    top: calc( 100vh - 10em );
+    height: 9.5em;
+    width: 29.5em;
+    z-index: 9998;
+    background-color: #9a9aa9cf;
+    border-radius: 0.15em;
+}
+.breadcrumbsDisplayToggle {
+    left: calc(100vw - 1.7em);
+    top: calc(100vh - 5em);
+    height: .7em;
+    width: 1.4em;
+    padding-left: 0.15em;
+    padding-right: 0.15em;
+    padding-top: 0.05em;
+    padding-bottom: 0.5em;
+    color: white;
+    font-weight: 800;
+    z-index: 9999;
+    vertical-align: top;
+    background: #3c3e9a82;
+    border-top-left-radius: 2em;
+    border-bottom-left-radius: 2em;
+    position: fixed;
+    font-size: 2em;
+    text-align: center;
+}
+.breadcrumbsOverlay.hidden {
+    display: none;
+}
+
+
+a {
+  text-decoration: none;
+}
+li a {
+  text-decoration: underline;
+  color: #0288d1;
+}
+.mdl-grid {
+  max-width: 1024px;
+  margin: auto;
+}
+.mdl-layout__header-row {
+  padding: 0;
+}
+.quickstart-user-details-container {
+  margin-top: 20px;
+  line-height: 25px;
+}
+#quickstart-sign-in-status {
+  font-weight: bold;
+}
+pre {
+  overflow-x: scroll;
+  line-height: 18px;
+}
+code {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+h3 {
+    float: left;
+    margin: unset;
+}
+i#placeholder_quote {
+    text-align: center;
+}
+p.submitFlagMessage {
+    font-size: 1.15em;
+}
+p.submitFlagInstruction {
+  background: white;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  border: solid white;
+  color: grey;
+  font-size: 1.1em;
+  margin-left: -6px;
+  margin-right: 5px;
+  width: 97%;
+  height: 50px;
+  padding-top: 45px;
+}
+.header {
+    height: 30px;
+}
+.header button {
+  display: inline-block;
+  position: absolute;
+  left: 79%;
+  float: right;
+  background: antiquewhite;
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+}
+.headerButtons {
+    float: right;
+    position: absolute;
+    right: 8px;
+    top: 10px;
+}
+.actionButton {
+    padding: 5px;
+    background-color: lightgrey;
+    border-radius: 3px;
+    float: right;
+    display: inline-block;
+    margin-right: 2px;
+}
+.flagElement {
+  width: 98%;
+  margin-left: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: aliceblue;
+  box-shadow: 0 0 1px 0.5px lightgrey;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.flagText {
+  width: 100%;
+  display: inline-block;
+  color: black;
+  font-size: 11pt;
+  margin-bottom: 5px;
+  font-weight: 100;
+
+}
+button.flagInfo {
+  float: right;
+  background-color: #d3d3d36b;
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+  font-family: cursive;
+}
+.flagContainer {
+  padding: 3px;
+  border-radius: 0.5em;
+  max-height: 500px;
+  overflow: auto;
+  margin-left: -5px;
+}
+p.flagStatus {
+  display: inline-block;
+  margin-bottom: 0;
+  color: darkgrey;
+  margin-top: 5px;
+}
+table {
+    width: 100%;
+}
+td.left {
+    text-align: center;
+    cursor: pointer;
+    width: 30px;
+    padding-left: 5px;
+}
+td.middle {
+    text-align: center;
+    border-left: solid grey 1px;
+    border-right: solid grey 1px;
+}
+td.right {
+    text-align: center;
+    cursor: pointer;
+    width: 30px;
+    padding-right: 5px;
+}
+img.logoImage {
+  display: inline-block;
+  float: left;
+  width: 70%;
+}
+footer a {
+  color: #083b8a;
+}
+footer {
+  background-color: white;
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-bottom: -10px;
+  text-align: center;
+}
+.hidden {
+  display: none !important;
+}
+
+/* Flag Form */
+.flagform {
+  background-color: aliceblue;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+h3.bc_header {
+  border-bottom: solid white 1px;
+  padding-bottom: 5px;
+  text-transform: uppercase;
+}
+.bc_header {
+  width: 100%;
+}
+.bc_input {
+  width: 285px;
+  margin-top: 5px;
+}
+select.bc_input {
+  width: 290px;
+}
+.bc_input.submit {
+  width: 45px;
+  background-color: #2196F3;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-size: 9pt;
+  text-transform: uppercase;
+}
+.bc_description {
+  height: 100px;
+}
+p.flagSubject {
+  float: right;
+  width: 50%;
+  text-align: right;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+p.flagOffense {
+  font-size: 12pt;
+  float: left;
+  width: 50%;
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 2px;
+  text-transform: capitalize;
+}
+
+/* Settings */
+.settings {
+    height: 250px;
+    text-align: center;
+    vertical-align: middle;
+}
+.settings h3.bc_header {
+    margin-top: 20%;
+}
+tr#settingsHeader {
+    float: left;
+    font-weight: bold;
+    margin-top: 15px;
+}
+tr.settingsItem {
+    width: -webkit-fill-available;
+    vertical-align: text-top;
+}
+td.settingsOption {
+    float: right;
+    width: max-content;
+    display: block;
+}
+td.settingsLabel {
+    float: left;
+    width: max-content;
+}
+td.userData {
+    max-width: 200px;
+    overflow: hidden;
+}
+.errorMessage {
+    background-color: #e79595;
+    padding: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+.errorMessage span {
+    color: white;
+    width: 85%;
+    font-size: 10pt;
+}
+
+.errorMessage a {
+    position: absolute;
+    right: 12.5px;
+    top: 42.5px;
+    font-size: 8px;
+    width: 10px;
+    color: #6c6161;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.tipMessage {
+    background-color: lightgrey;
+    padding: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+.tipMessage span {
+    color: #353535;
+    width: 85%;
+    font-size: 10pt;
+}
+
+.tipMessage a {
+    position: absolute;
+    right: 12.5px;
+    top: 42.5px;
+    font-size: 8px;
+    width: 10px;
+    color: #6c6161;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.successMessage {
+    background-color: #ace26dcf;
+    padding: 5px;
+    margin-left: 3px;
+    margin-right: 4px;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+.successMessage span {
+    color: white;
+    width: 85%;
+    font-size: 10pt;
+}
+
+.successMessage a {
+    position: absolute;
+    right: 12.5px;
+    top: 42.5px;
+    font-size: 8px;
+    width: 10px;
+    color: #6c6161;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.faqButtons {
+    float: right;
+    margin-top: 6px;
+    padding: 5px;
+    font-size: 12px;
+    color: #808080c2;
+    font-weight: 600;
+}
+
+/* New flag format stuff */
+.flagType {
+    float: right;
+}
+.flagBodyText {
+    padding-left: 10px;
+}
+.flagVoting {
+    width: 5px;
+}
+.flagBody {
+    display: flex;
+    margin-top: 2px;
+}
+.flagActionButton {
+    color: grey;
+    font-weight: 600;
+    margin-right: 5px;
+}
+.flagUsername {
+    margin-left: 5px;
+    font-weight: 700;
+    margin-right: 8px;
+}
+.flagHeader i {
+    font-size: 8pt;
+    margin-left: -2px;
+}
+.status_PENDING {
+    color: yellow;
+    text-shadow: black 0px 0px 3px;
+    border-radius: 5px;
+}
+.status_VERIFIED {
+    color: red;
+    text-shadow: black 0px 0px 3px;
+    border-radius: 5px;
+}
+.status_undefined {
+    color: lightgrey;
+    text-shadow: black 0px 0px 3px;
+    border-radius: 5px;
+}
+.bc_description.bc_comment {
+    width: 97%;
+}
+div#noFlags {
+    height: 200px;
+}
+.actionButton.example {
+    font-size: 6pt;
+    display: inline;
+    margin: unset;
+    position: unset;
+    float: unset;
+    vertical-align: middle;
+}
+.counter {
+    background-color: #a06262;
+    padding: 2px;
+    border-radius: 5px;
+    width: 10px;
+    border: white 2px;
+    position: absolute;
+    left: 63px;
+    text-align: center;
+    color: lightgrey;
+    top: -8px;
+    font-size: 8pt;
+    font-weight: bold;
+}
+.present {
+    background: #ffeb3be3;
+}
+.hasChildren {
+  padding-top: 5px;
+}
+span.hasChildrenMessage {
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* cleaning up nested comments */
+.flagFooter {
+  padding-left: 5px;
+  padding-bottom: 5px;
+}
+.flagBody {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.flagHeader {
+  padding: 5px;
+}
+.flagElement {
+  padding: 0;
+}
+p.submitFlagMessage.noFlags {
+    padding: 5px;
+}
+p.submitFlagInstruction.noFlags {
+    width: 90%;
+    margin: auto;
+}
+.childDiv {
+    padding-bottom: 0.5px;
+}
+img.loader {
+    width: 23px;
+    margin-right: 2px;
+}
+button.bc_input.submit.delete {
+    width: 85px;
+}
+.deleteDiv, .editDiv {
+    padding: 5px;
+}
