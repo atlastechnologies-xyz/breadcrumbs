@@ -52,8 +52,8 @@ function checkUserStatus () {
 
 function setFactoid () {
   getFactoid (function(result) {
-    document.getElementById('footerFactoid').textContent = result.text
-    document.getElementById('footerMoreInfoFactoid').href = result.link
+    // document.getElementById('footerFactoid').textContent = result.text
+    // document.getElementById('footerMoreInfoFactoid').href = result.link
   })
 }
 
@@ -372,14 +372,14 @@ function initApp() {
 }
 
 function addButtonListeners() {
-  document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
-  document.getElementById('refresh-button').addEventListener('click', refreshData);
+  // document.getElementById('quickstart-button').addEventListener('click', startSignIn, false);
+  // document.getElementById('refresh-button').addEventListener('click', refreshData);
   document.getElementById('newFlag-button').addEventListener('click', BC_submitNewFlag);
   document.getElementById('newStar-button').addEventListener('click', BC_submitNewStar);
   document.getElementById('showRulesButton').addEventListener('click', showRules)
   // document.getElementById('showFAQButton').addEventListener('click', showFAQ)
-  document.getElementById('breadcrumbIsFlag').addEventListener('click', showFlagRules)
-  document.getElementById('saveUserNameButton').addEventListener('click', updateUser)
+  // document.getElementById('breadcrumbIsFlag').addEventListener('click', showFlagRules)
+  // document.getElementById('saveUserNameButton').addEventListener('click', updateUser)
 }
 function showFlagRules () {
   
@@ -429,13 +429,13 @@ function getFlags (cb) {
     console.log('cb', cb)
     console.log(url)
 
-    fetchFlagsForUrl(url, function (flags){
-      console.log('returned flags', flags)      
-      if ( flags.length > 0 ) {
-        cb(flags)
+    fetchFlagsForUrl(url, function (result){
+      console.log('returned flags', result)      
+      if ( ( result.crumbs.length > 0 ) || ( result.flags.length > 0 ) ) {
+        cb(result)
       } else {
-        var arr = []
-        cb(arr)
+        
+        cb(result)
       }
     })
 
@@ -449,37 +449,36 @@ function fetchFlagsForUrl (url, cb) {
     //url == "www.breitbart.com/big-government/2018/10/06/kavanaugh-confirmed-possibly-most-conservative-supreme-court-since-1934/") {
     firebase.functions().httpsCallable('getUrlInfo')({'url' : url})
       .then( function(result) {
+        console.log('getUrlInfo returned', result)
 
+        if ( typeof(result.error) === "undefined" ) {
+          var flagsAndCrumbs = {
+            "flags" : result.data.flags, 
+            "crumbs" : result.data.crumbs
+          }
+          
+          // if (result.data.isStarred) {
 
-        if ( result.success === true ) {
+          //   document.getElementById('newStar-button').className += " present"
+          // } else if ( result.data.counts === "undefined" ) { 
+          //   console.log('counts returned undefined')
+          // } 
 
-          console.log('Retrieved data for getUrlInfo: ', result);
-          var flags = result.data.flagsAndCrumbs
-
-
-          if (result.data.isStarred) {
-
-            document.getElementById('newStar-button').className += " present"
-          } else if ( result.data.counts === "undefined" ) { 
-            console.log('counts returned undefined')
-          } else {
-            console.log('counts are ', result.daata.counts)
-            if ( result.data.counts.star_count > 0 ) { 
-              document.getElementById('starCount').className = (document.getElementById('starCount').className).split('hidden').join(' ')
-              document.getElementById('starCount').innerText = result.data.counts.star_count
-            }
-
+          if ( result.data.counts.star_count > 0 ) { 
+            document.getElementById('starCount').className = (document.getElementById('starCount').className).split('hidden').join(' ')
+            document.getElementById('starCount').innerText = result.data.counts.star_count
           }
 
-          if (result.data.isFlagged) {
-            document.getElementById('newFlag-button').className += " present"
-          }
 
-          if (flags.length) {
-            cb (flags)
+          if ( (flagsAndCrumbs.crumbs.length > 0) || ( flagsAndCrumbs.flags.length > 0 )) {
+            cb (flagsAndCrumbs)
           } else {
             var arr = []
-            cb(arr)
+            flagsAndCrumbs = {
+              "flags" : arr, 
+              "crumbs" : arr
+            }
+            cb(flagsAndCrumbs)
           }
         } else {
           console.log('error fetching data', result.data.error)
@@ -491,20 +490,22 @@ function fetchFlagsForUrl (url, cb) {
 
 function loadFlags () {
 
-  getFlags(function (flags) {
+  getFlags(function (data) {
     // var flags = []
-    console.log('flags', flags)
+    console.log('flags', data)
 
-    if ( flags.length > 0 ) {
+    if ( (data.flags.length > 0 ) || (data.crumbs.length > 0 ) )  {
       document.getElementById('home').className += " hidden"
       document.getElementById('settings').className += " hidden"
       document.getElementById('newFlag').className += " hidden"
-      showFlags(flags)
+      showFlags(data)
+
     } else {
       document.getElementById('flagContainer').className += " hidden"
       document.getElementById('settings').className += " hidden"
       document.getElementById('newFlag').className += " hidden"      
       showNoFlagsMessage()
+
     }
 
   })
@@ -627,7 +628,7 @@ function setSettings (settings) {
 }
 
 function setNavListeners() {
-  document.getElementById('settings-button').addEventListener('click', navSettings)
+  // document.getElementById('settings-button').addEventListener('click', navSettings)
   document.getElementById('home-button').addEventListener('click', navHome)
   document.getElementById('new-button').addEventListener('click', navNewFlag)
   document.getElementById('BC_nf_submitNewFlagForm').addEventListener('click', BC_submitNewFlagForm)
@@ -686,11 +687,12 @@ function returnRandomQuote () {
   return quote
 }
 
-function showFlags (unsortedFlags) {
+function showFlags (data) {
 
   // Retrieve Flag Container
   // flagContainer.className = "flagContainer"
-  var flags = sortCommentsByScore(unsortedFlags)
+  data.sortedFlags = sortCommentsByScore(data.flags)
+  data.sortedCrumbs = sortCommentsByScore(data.crumbs)
 
   loaderControl()
 
@@ -701,7 +703,7 @@ function showFlags (unsortedFlags) {
 
     var flagContainer = document.getElementById("flagContainer");
 
-    setTopLevelFlags(flags, showPendingFlags, flagContainer)
+    setTopLevelFlags(data.sortedCrumbs, showPendingFlags, flagContainer)
 
   });  
 }

@@ -13,7 +13,7 @@ function loadIframe (data) {
 	
 	var hideButton = document.createElement('span')
 		hideButton.id = "hideBreadcrumbsOverlay"
-		hideButton.textContent = "-"
+		hideButton.textContent = ""
 		hideButton.className = "breadcrumbsDisplayToggle"
 
 	document.body.appendChild(iframe)	
@@ -34,13 +34,13 @@ function loadIframe (data) {
 			console.log('hide clicked, currently hidden - displaying')
 		    overlay.className = ( overlay.className.split('hidden') ).join(' ')
 		    button.className = ( button.className.split('collapsed') ).join(' ')
-		    button.textContent = "-"			
+		    button.textContent = ""			
 
 		} else {
 			console.log('hide clicked')
 		    overlay.className += " hidden"
 		    button.className += " collapsed"
-		    button.textContent = "+"
+		    button.textContent = ""
 
 		}
 	     

@@ -18,7 +18,7 @@ limitations under the License.
 <head>
   <meta charset=utf-8 />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eTrust Sign In</title>
+  <title>breadcrumbs Overlay</title>
 
   <link rel="stylesheet" href="iframe.css">
 
@@ -35,15 +35,19 @@ limitations under the License.
 <div class="body">
   
   <div class="header">
-    <a href="https://downloadbreadcrumbs.com/#/latest" target="_blank"><h3><img class="logoImage" src="../images/logo.png" alt="Breadcrumbs"></img></h3></a>
     <div class="headerButtons">  
-      <i class="fas fa-plus actionButton" id="new-button"></i> 
+      <img id="loader" class="loader hidden" src="../images/loader.gif">
+
+      <i class="fas fa-plus actionButton" id="new-button"> Breadcrumb</i> 
+
+      <i class="fas fa-comment actionButton actionButton" id="home-button"></i> 
       <span class="counter hidden" id="flagCount"></span>
       <i class="fas fa-exclamation-triangle actionButton" id="newFlag-button"></i> 
       <span class="counter star hidden" id="starCount"></span>
       <i class="fas fa-star actionButton" id="newStar-button"></i>
-      <i class="fas fa-home actionButton" id="home-button"></i>  
-      <img id="loader" class="loader hidden" src="../images/loader.gif">
+      <i class="fas fa-play overlayControls actionButton" id="playButton"></i>
+      <i class="fas fa-redo overlayControls actionButton" id="lastButton"></i>
+
 
     </div> 
   </div>
@@ -116,10 +120,9 @@ limitations under the License.
         "In vain have you acquired knowledge if you have not imparted it to others." <br>- Deuteronomy Rabbah
       </i> -->
       <p class="submitFlagMessage noFlags">
-        To submit a breadcrumb, just click the <i class="fas fa-plus actionButton example" id="new-button"></i> icon above!
-      </p>
-      <p class="submitFlagInstruction noFlags">
-        There are no breadcrumbs on this page yet.
+        <i class="fas fa-comment actionButton example" id="new-button"></i> Lets you leave a comment <br>
+        <i class="fas fa-star actionButton example" id="new-button"></i> Save a page to your favorites <br>
+        <i class="fas fa-exclamation-triangle actionButton example" id="new-button"></i> Marks a page for moderator review <br>
       </p>
     </div>
   </div>
@@ -186,13 +189,14 @@ limitations under the License.
   </div>
   
   <div id="flagContainer" class="flagContainer">
+
     
   </div>
 
 
 
 </body>
-<footer>
+<!-- <footer>
     <table>
     <tr>
       <td class="left" id="settings-button" href="#">
@@ -211,5 +215,5 @@ limitations under the License.
       </td>
     </tr>
   </table>
-</footer>
+</footer> -->
 </html>

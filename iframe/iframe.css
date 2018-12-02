@@ -1,17 +1,17 @@
 /*iframe.css*/
 .breadcrumbsOverlay {
     position: fixed;
-    left: calc( 100vw - 30em );
-    top: calc( 100vh - 10em );
-    height: 9.5em;
-    width: 29.5em;
+    width: 30vw;
+    left: 70vw;
+    height: 25vh;
+    top: 75vh;
     z-index: 9998;
     background-color: #9a9aa9cf;
     border-radius: 0.15em;
 }
 .breadcrumbsDisplayToggle {
-    left: calc(100vw - 1.7em);
-    top: calc(100vh - 5em);
+    left: calc(100vw - 1.4em);
+    top: 75vh;
     height: .7em;
     width: 1.4em;
     padding-left: 0.15em;
@@ -29,6 +29,7 @@
     font-size: 2em;
     text-align: center;
 }
+
 .breadcrumbsOverlay.hidden {
     display: none;
 }
@@ -100,10 +101,11 @@ p.submitFlagInstruction {
   margin-top: 5px;
 }
 .headerButtons {
-    float: right;
+    float: left;
     position: absolute;
-    right: 8px;
-    top: 10px;
+    right: unset;
+    top: 2.5px;
+    left: 2.5px;
 }
 .actionButton {
     padding: 5px;
@@ -112,6 +114,8 @@ p.submitFlagInstruction {
     float: right;
     display: inline-block;
     margin-right: 2px;
+    min-width: 1em;
+    text-align: center;
 }
 .flagElement {
   width: 98%;
@@ -458,6 +462,7 @@ span.hasChildrenMessage {
 }
 p.submitFlagMessage.noFlags {
     padding: 5px;
+    line-height: 2em;
 }
 p.submitFlagInstruction.noFlags {
     width: 90%;
@@ -469,6 +474,7 @@ p.submitFlagInstruction.noFlags {
 img.loader {
     width: 23px;
     margin-right: 2px;
+	float: right;
 }
 button.bc_input.submit.delete {
     width: 85px;
