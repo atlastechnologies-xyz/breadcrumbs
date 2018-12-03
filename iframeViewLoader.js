@@ -6,7 +6,7 @@ function loadIframe (data) {
 	
 	console.log('iframeViewLoading', data)
 	var iframe = document.createElement('iframe')
-		iframe.className = "breadcrumbsOverlay"
+		iframe.className = "breadcrumbsOverlay hidden"
 		iframe.id = "breadcrumbsOverlay"
 		iframe.src = data
 		// iframe.src = chrome.extension.getURL('iframe/iframeView.html')
