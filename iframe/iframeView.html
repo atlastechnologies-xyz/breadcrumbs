@@ -30,171 +30,186 @@ limitations under the License.
   <script src="iframeView.js"></script>
 
 </head>
-
-
-<div class="body">
-  
+<body>
+<div class="expanded">
   <div class="header">
-    <div class="headerButtons">  
-      <img id="loader" class="loader hidden" src="../images/loader.gif">
+      <div class="headerButtons">  
+        <img id="loader" class="loader hidden" src="../images/loader.gif">
 
-      <i class="fas fa-plus actionButton" id="new-button"> Breadcrumb</i> 
+         
 
-      <i class="fas fa-comment actionButton actionButton" id="home-button"></i> 
-      <span class="counter hidden" id="flagCount"></span>
-      <i class="fas fa-exclamation-triangle actionButton" id="newFlag-button"></i> 
-      <span class="counter star hidden" id="starCount"></span>
-      <i class="fas fa-star actionButton" id="newStar-button"></i>
-      <i class="fas fa-play overlayControls actionButton" id="playButton"></i>
-      <i class="fas fa-redo overlayControls actionButton" id="lastButton"></i>
+        <i class="fas fa-comment actionButton actionButton" id="new-button"></i> 
+        
+        <i class="fas fa-exclamation-triangle actionButton" id="newFlag-button"><span class="counter hidden" id="flagCount"></span></i> 
+        
+        <i class="fas fa-star actionButton" id="newStar-button"><span class="counter star hidden" id="starCount"></span></i>
+        <i class="fas fa-cog actionButton" id="settings-button"></i>
+        <i class="fas fa-play overlayControls actionButton" id="playButton"></i>
+        <!-- <i class="fas fa-redo overlayControls actionButton" id="lastButton"></i> -->
 
 
-    </div> 
-  </div>
-
-  <div id="error">
-    
-  </div>
-  <div id="success">
-    
-  </div>  
-
-  <div id="newFlag" class="flagform hidden">
-    <div class="bc_header">
-      <h3 class="bc_header">Leave a breadcrumb</h3>
+      </div> 
     </div>
+  <div class="body">
+    
+    
 
-    <textarea class="bc_input bc_description" id="BC_nf_description" placeholder="Leave a comment"></textarea><br>
-    <span class="breadcrumbIsFlagLabel">Content on this page is misleading or false</span><input type="checkbox" id="breadcrumbIsFlag"><br>
-
-    <div class="newFlagControls">
-      <button id="BC_nf_submitNewFlagForm" class="bc_input submit">Save</button>
-      <a href="#" class="faqButtons" id="showRulesButton">Rules</a>
+    <div id="error">
       
     </div>
+    <div id="success">
+      
+    </div>  
+
+    <div id="newFlag" class="flagform hidden">
+      <div class="bc_header">
+        <h3 class="bc_header">Leave a breadcrumb</h3>
+      </div>
+
+      <textarea class="bc_input bc_description" id="BC_nf_description" placeholder="Leave a comment"></textarea><br>
+      <span class="breadcrumbIsFlagLabel">Content on this page is misleading or false</span><input type="checkbox" id="breadcrumbIsFlag"><br>
+
+      <div class="newFlagControls">
+        <button id="BC_nf_submitNewFlagForm" class="bc_input submit">Save</button>
+        <a href="#" class="faqButtons" id="home-button">cancel</a>
+        <a href="#" class="faqButtons" id="showRulesButton">Rules</a>
+        
+      </div>
+      
+      <div id="rules" class="rulesContainer hidden">
+        <div class="rulesHeader">
+          <hr>
+          <h3>Rules:</h3><br>
+          <br><span>
+          Breadcrumbs was founded to help people share and exchange ideas freely.<br>  
+            1. Be kind.<br>
+            2. Be respectful. <br>
+            3. Be open-minded.<br>
+          </span><br>
+          <i>Rudeness, personal attacks, or unsubstantiated claims make it more difficult for other users to learn, and can hurt your position more than they help. If you see another user engaging in this sort of behaviour please report them to the moderators.</i>
+        </div>
+      </div>
+      <div id="flagRules" class="rulesContainer hidden">
+        <div class="rulesHeader">
+          <hr>
+          <h3>Misleading Content Flag Rules:</h3><br>
+          <br><span>
+          We take misleading content flags very seriously. All flags will be reviewed by a member of our moderator panel.<br>  
+            1. Include citations if possible. (Web urls are fine)<br>
+            2. Include an excerpt from the page. <br>
+            3. Explain why you believe the content to be false.<br>
+          </span><br>
+          <i>If you find it difficult to do any of the above, don't worry. You can always submit your thoughts as a comment (un-check the box) and other users can help you flush out the details!</i>
+        </div>
+      </div>    
+      <div id="FAQ" class="faqContainer hidden">
+        <div class="rulesHeader">
+          <hr>
+          <h3>FAQ:</h3><br>
+          <br><span>
+          Breadcrumbs was founded to help people share and exchange ideas freely.<br>  
+            1. Be kind.<br>
+            2. Be respectful. <br>
+            3. Be open-minded.<br>
+          </span><br>
+          <i>Rudeness, personal attacks, or unsubstantiated claims make it more difficult for other users to learn, and can hurt your position more than they help. If you see another user engaging in this sort of behaviour please report them to the moderators.</i>
+        </div>
+      </div>
+    </div> 
     
-    <div id="rules" class="rulesContainer hidden">
-      <div class="rulesHeader">
-        <hr>
-        <h3>Rules:</h3><br>
-        <br><span>
-        Breadcrumbs was founded to help people share and exchange ideas freely.<br>  
-          1. Be kind.<br>
-          2. Be respectful. <br>
-          3. Be open-minded.<br>
-        </span><br>
-        <i>Rudeness, personal attacks, or unsubstantiated claims make it more difficult for other users to learn, and can hurt your position more than they help. If you see another user engaging in this sort of behaviour please report them to the moderators.</i>
+    <div id="home">
+      <div id="noFlags" class="flagElement">
+        <!-- <i id="placeholder_quote" class="flagText">
+          "In vain have you acquired knowledge if you have not imparted it to others." <br>- Deuteronomy Rabbah
+        </i> -->
+        <p class="submitFlagMessage noFlags">
+          <i class="fas fa-comment actionButton example" id="new-button"></i> Lets you leave a comment <br>
+          <i class="fas fa-star actionButton example" id="new-button"></i> Save a page to your favorites <br>
+          <i class="fas fa-exclamation-triangle actionButton example" id="new-button"></i> Marks a page for moderator review <br>
+        </p>
       </div>
     </div>
-    <div id="flagRules" class="rulesContainer hidden">
-      <div class="rulesHeader">
-        <hr>
-        <h3>Misleading Content Flag Rules:</h3><br>
-        <br><span>
-        We take misleading content flags very seriously. All flags will be reviewed by a member of our moderator panel.<br>  
-          1. Include citations if possible. (Web urls are fine)<br>
-          2. Include an excerpt from the page. <br>
-          3. Explain why you believe the content to be false.<br>
-        </span><br>
-        <i>If you find it difficult to do any of the above, don't worry. You can always submit your thoughts as a comment (un-check the box) and other users can help you flush out the details!</i>
-      </div>
-    </div>    
-    <div id="FAQ" class="faqContainer hidden">
-      <div class="rulesHeader">
-        <hr>
-        <h3>FAQ:</h3><br>
-        <br><span>
-        Breadcrumbs was founded to help people share and exchange ideas freely.<br>  
-          1. Be kind.<br>
-          2. Be respectful. <br>
-          3. Be open-minded.<br>
-        </span><br>
-        <i>Rudeness, personal attacks, or unsubstantiated claims make it more difficult for other users to learn, and can hurt your position more than they help. If you see another user engaging in this sort of behaviour please report them to the moderators.</i>
+
+    <div id="loading">
+      <div id="loadingMessage" class="flagElement hidden">
+        <p class="submitFlagInstruction">
+          Loading breadcrumbs ...
+        </p>
       </div>
     </div>
-  </div> 
-  
-  <div id="home">
-    <div id="noFlags" class="flagElement">
-      <!-- <i id="placeholder_quote" class="flagText">
-        "In vain have you acquired knowledge if you have not imparted it to others." <br>- Deuteronomy Rabbah
-      </i> -->
-      <p class="submitFlagMessage noFlags">
-        <i class="fas fa-comment actionButton example" id="new-button"></i> Lets you leave a comment <br>
-        <i class="fas fa-star actionButton example" id="new-button"></i> Save a page to your favorites <br>
-        <i class="fas fa-exclamation-triangle actionButton example" id="new-button"></i> Marks a page for moderator review <br>
-      </p>
-    </div>
-  </div>
-
-  <div id="loading">
-    <div id="loadingMessage" class="flagElement hidden">
-      <p class="submitFlagInstruction">
-        Loading breadcrumbs ...
-      </p>
-    </div>
-  </div>
-  
-  <div id="settings" class="flagform settings hidden">
-    <div class="bc_header">  
-        <table id="settingsPanel" class="settingsPanel">
-          <tr>
-            <td class="userData">
-              <h3 id="userName" class="userName">Not signed in</h3><br>
-              <i id="userScore" class="userScore"></i>
-            </td>
-            <td>
-              <button id="quickstart-button">Google Login</button> 
-            </td>
-          </tr>
-          <tr id="settingsHeader"><td>Settings:</td></tr>
-          <tr class="settingsItem">
-            <td class="settingsLabel"><input type="text" id="userNameInput" placeholder="Username"></td>
-            <td class="settingsOption">
-              <button id="saveUserNameButton">Save</button>            
-            </td>
-          <tr>
-<!--           <tr class="settingsItem">
-            <td class="settingsLabel">Color Scheme</td>
-            <td class="settingsOption">
-              <select class="colorScheme" id="colorScheme">
-                <option value="Light" selected>Light</option>
-                <option value="Dark">Dark</option>
-              </select>              
-            </td>
-          <tr>
-          <tr class="settingsItem">
-            <td class="settingsLabel">Auto-Highlighting</td>
-            <td class="settingsOption">
-              <input type="checkbox" id="autoHighlighting">
-            </td>
-          <tr>
-          <tr class="settingsItem">
-            <td class="settingsLabel">Show Pending Flags</td>
-            <td class="settingsOption">
-              <input type="checkbox" id="showPendingFlags">
-            </td>
-          <tr>  -->
-        </table>
-    </div>
-    <!-- 
-    <input type="text" id="BC_nf_sourceUrl" class="bc_input" placeholder="Enter a citation url to expedite approval">
     
-    <select class="bc_input colorScheme" id="BC_nf_offenseSelect">
-      <option value="Light" selected>Light</option>
-      <option value="Dark">Dark</option>
-    </select>
+    <div id="settings" class="flagform settings hidden">
+      <div class="bc_header">  
+          <table id="settingsPanel" class="settingsPanel">
+            <tr>
+              <td class="userData">
+                <h3 id="userName" class="userName">Not signed in</h3><br>
+                <i id="userScore" class="userScore"></i>
+              </td>
+              <td>
+                <button id="quickstart-button">Google Login</button> 
+              </td>
+            </tr>
+            <tr id="settingsHeader"><td>Settings:</td></tr>
+            <tr class="settingsItem">
+              <td class="settingsLabel"><input type="text" id="userNameInput" placeholder="Username"></td>
+              <td class="settingsOption">
+                <button id="saveUserNameButton">Save</button>            
+              </td>
+            <tr>
+  <!--           <tr class="settingsItem">
+              <td class="settingsLabel">Color Scheme</td>
+              <td class="settingsOption">
+                <select class="colorScheme" id="colorScheme">
+                  <option value="Light" selected>Light</option>
+                  <option value="Dark">Dark</option>
+                </select>              
+              </td>
+            <tr>
+            <tr class="settingsItem">
+              <td class="settingsLabel">Auto-Highlighting</td>
+              <td class="settingsOption">
+                <input type="checkbox" id="autoHighlighting">
+              </td>
+            <tr>
+            <tr class="settingsItem">
+              <td class="settingsLabel">Show Pending Flags</td>
+              <td class="settingsOption">
+                <input type="checkbox" id="showPendingFlags">
+              </td>
+            <tr>  -->
+          </table>
+      </div>
+      <!-- 
+      <input type="text" id="BC_nf_sourceUrl" class="bc_input" placeholder="Enter a citation url to expedite approval">
+      
+      <select class="bc_input colorScheme" id="BC_nf_offenseSelect">
+        <option value="Light" selected>Light</option>
+        <option value="Dark">Dark</option>
+      </select>
 
-    <button id="BC_SaveSettings" class="bc_input submit">Save</button>     -->
-  </div>
-  
-  <div id="flagContainer" class="flagContainer">
-
+      <button id="BC_SaveSettings" class="bc_input submit">Save</button>     -->
+    </div>
     
-  </div>
+    <div id="flagContainer" class="flagContainer">
 
+      
+    </div>
 
+</div>
+</tr></tr></table></div></div></div></div>
+<div class="collapsed hidden">
+    <div class="header">
+      <div class="headerButtons">  
+        <img id="loader" class="loader hidden" src="../images/loader.gif">
 
+        <i class="fas fa-comment" id="collapsedCounter"><span class="collapsedCounter"></span></i> 
+        <i class="fas fa-play" id="playButton"></i>
+        <!-- <i class="fas fa-redo overlayControls actionButton" id="lastButton"></i> -->
+
+      </div> 
+    </div>
+</div>
 </body>
 <!-- <footer>
     <table>

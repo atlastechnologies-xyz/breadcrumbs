@@ -27,7 +27,7 @@
  "content_scripts": [
    {
      "matches": ["*://*/*"],
-     "css": ["iframe/iframe.css"],
+     "css": ["iframe/iframeLoader.css"],
      "js": ["iframeViewLoader.js"]
    }
  ],

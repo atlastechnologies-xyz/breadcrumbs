@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+<head>
+  <meta charset=utf-8 />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>breadcrumbs Overlay</title>
+
+  <link rel="stylesheet" href="iframeCollapse.css">
+
+  <!-- ***************************************************************************************
+       * TODO(DEVELOPER): Make sure you are importing the latest version of the Firebase JS. *
+       *************************************************************************************** -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">     
+  <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase.js"></script>
+  <script src="iframeCollapseView.js"></script>
+
+</head>
+<body>
+  <div class="loader" id="loaderDiv">
+    <img id="loader" class="loader hidden" src="../images/loader.gif">
+  </div>
+
+  <div class="notification" id="notificationDiv">
+    <i class="notificationIcon fas fa-star hidden" id="starNotification"></i>
+    <i class="notificationIcon fas fa-exclamation-triangle hidden" id="flagNotification"></i>
+    <i class="notificationIcon fas fa-comment hidden" id="commentNotification"></i>
+  </div>
+</body>
+</html>

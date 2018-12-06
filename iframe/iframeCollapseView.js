@@ -17,11 +17,8 @@ firebase.initializeApp(config);
 
 window.onload = function() {
   console.log("onLoad iframeView Worked");
-  checkUserStatus()
   initApp()
   loadFlags()
-  setNavListeners()
-  setFactoid()
 
 };
 
@@ -501,17 +498,20 @@ function loadFlags () {
     // var flags = []
     console.log('flags', data)
 
-    if ( (data.flags.length > 0 ) || (data.crumbs.length > 0 ) )  {
-      document.getElementById('home').className += " hidden"
-      document.getElementById('settings').className += " hidden"
-      document.getElementById('newFlag').className += " hidden"
-      showFlags(data)
+    if ( typeof (data.counts.crumb_count) === "undefined" )  data.counts.crumb_count = 0;
+    if ( typeof (data.counts.star_count) === "undefined" )  data.counts.star_count = 0;
+    if ( typeof (data.counts.flag_count) === "undefined" )  data.counts.flag_count = 0;
 
-    } else {
-      document.getElementById('flagContainer').className += " hidden"
-      document.getElementById('settings').className += " hidden"
-      document.getElementById('newFlag').className += " hidden"      
-      showNoFlagsMessage()
+    if ( data.counts.star_count > 0) {
+      document.getElementById('starNotification').className = (document.getElementById('starNotification').className.split('hidden')).join(' ')
+    } else if (data.counts.crumb_count > 0) {
+      document.getElementById('commentNotification').className = (document.getElementById('commentNotification').className.split('hidden')).join(' ')
+    } else if (data.counts.flag_count > 0) {
+      document.getElementById('flagNotification').className = (document.getElementById('flagNotification').className.split('hidden')).join(' ')
+
+    } else {  
+      document.getElementById('commentNotification').className = (document.getElementById('commentNotification').className.split('hidden')).join(' ')
+      
 
     }
 
