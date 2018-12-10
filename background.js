@@ -39,6 +39,7 @@ function runTimeTasks () {
   callFirebaseInitApp()
   initSettings()  
   setData();
+  loadBoard();
   // configureContextMenus();
   chrome.contextMenus.onClicked.addListener(onClickHandler);
 
@@ -127,6 +128,41 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
   }
 
 })
+
+function loadBoard (boardName) {
+  console.log('loadboard triggered')
+    firebase.functions().httpsCallable('getUrlList')({})
+    .then( function(result) {
+      if ( typeof(result.data.error) != "undefined" ) {
+        console.log('caught api error: ', result.data.error)
+        handleError(result.data.error)
+      } else {
+        handleSuccess("Leaderboard retrieved successfully!", result)
+        setBoard(result)
+      }
+    }).catch( function(exception){
+
+      console.log('flag submission error!: ', exception)
+      handleError(exception.toString())
+    })
+}
+
+function setBoard ( data ) {
+  console.log('setBoard triggered')
+  chrome.storage.local.set({board: data}, function(result) {
+    console.log('setBoard returned', result)
+    chrome.storage.local.get(["playIndex"] , function(index){
+      if ( index > 0 ) {
+        console.log('index is ', index)
+      } else {
+        index = 0
+        chrome.storage.local.set({playIndex: index}, function(result) {
+          console.log('playIndex set to 0')
+        })
+      }
+    })
+  });
+}
 
 function callAPIForNewFlag (payload) {
 

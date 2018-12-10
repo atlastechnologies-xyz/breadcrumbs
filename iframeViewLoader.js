@@ -65,7 +65,7 @@ function loadMiniIframe (data) {
 	
 	var parent = document.createElement('div')
 		parent.id = "breadcrumbsCollapsed"
-		parent.className = "breadcrumbsMiniIframe hidden"
+		parent.className = "breadcrumbsMiniIframe"
 
 	console.log('iframeViewLoading', data)
 	var iframe = document.createElement('iframe')

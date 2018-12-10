@@ -22,7 +22,7 @@ window.onload = function() {
   loadFlags()
   setNavListeners()
   setFactoid()
-
+  setPlayListener()
 };
 
 // Handlers for return messages from background.js
@@ -85,6 +85,35 @@ function getFactoid (cb) {
   var i = Math.floor(Math.random() * (factoids.length))
 
   cb( factoids[i] )
+}
+
+function setPlayListener() {
+  console.log('setPlayListener running')
+  document.getElementById('playButton').addEventListener('click', playNext )
+
+}
+
+function playNext () {
+  chrome.storage.local.get(["playIndex"] , function(index){
+    
+    console.log('playnext triggered', index.playIndex)
+    chrome.storage.local.get(["board"] , function(board){
+      console.log('board returned', board)
+      var next = "https://" + board.board.data[index.playIndex].url
+      index.playIndex++
+      chrome.storage.local.set({ playIndex: index.playIndex} , function(index){
+          console.log('playindex updated')
+          chrome.tabs.query( { active: true, currentWindow: true }, function( tabs ) {
+            console.log('navigating to ', next)
+            chrome.tabs.update( tabs[0].id, { url: next } ); 
+            
+          })
+
+      });
+    });
+    
+  });
+
 }
 
 function displayError (message) {
